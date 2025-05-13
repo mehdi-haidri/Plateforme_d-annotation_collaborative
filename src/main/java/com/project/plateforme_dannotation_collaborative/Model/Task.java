@@ -8,6 +8,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 
+import java.util.Date;
 import java.util.List;
 
 @Entity
@@ -17,8 +18,8 @@ public class Task {
     @Id
     @GeneratedValue
     long id;
-    @DateTimeFormat(pattern = "dd/mm/yyyy")
-    String limitDate;
+    @Temporal(TemporalType.DATE)
+    Date limitDate;
     Double advancement = 0d;
     Integer size;
 

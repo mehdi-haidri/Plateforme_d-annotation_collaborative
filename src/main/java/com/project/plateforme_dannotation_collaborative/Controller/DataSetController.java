@@ -9,7 +9,9 @@ import com.project.plateforme_dannotation_collaborative.Dto.DataSetDto;
 import com.project.plateforme_dannotation_collaborative.Dto.DatasetMinResposeDto;
 import com.project.plateforme_dannotation_collaborative.Model.Dataset;
 import com.project.plateforme_dannotation_collaborative.Service.DataSetService;
+import lombok.Data;
 import lombok.RequiredArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,6 +19,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 
@@ -29,8 +32,10 @@ public class DataSetController {
 
     private final DataSetService dataSetService;
 
-    @PostMapping("/addDataSet")
-    public ResponseEntity <?> AddDataSet( @RequestPart("name") String name,
+    @PostMapping("/addDataset")
+    public ResponseEntity <?> AddDataSet(
+            @RequestPart("name") String name,
+                                          @RequestParam("datelimit") @DateTimeFormat(pattern = "yyyy-MM-dd") Date datelimit,
                                           @RequestPart("description") String description,
                                           @RequestPart("classes") String classesJson,
                                           @RequestPart("annotators") String annotatorsJson,
@@ -43,6 +48,7 @@ public class DataSetController {
         dto.setName(name);
         dto.setDescription(description);
         dto.setFile(file);
+        dto.setDatelimit(datelimit);
         dto.setAnnotators(objectMapper.readValue(annotatorsJson, new TypeReference<List<Long>>() {}));
         dto.setClasses(objectMapper.readValue(classesJson, new TypeReference<List<String>>(){}));
         Dataset newDataset= dataSetService.saveDateSet(dto);
@@ -61,7 +67,7 @@ public class DataSetController {
         Response response = new Response();
         try{
            Dataset dataset = dataSetService.getDataset(annotatorsDatasetDto.getDatasetId());
-           dataSetService.saveAnnotators(dataset , annotatorsDatasetDto.getAnnotators());
+           dataSetService.saveAnnotators(dataset , annotatorsDatasetDto.getAnnotators() , annotatorsDatasetDto.getDatelimit());
            if ( dataset == null || dataset.getAnnotated()) {
                throw new Exception("Dataset cannot be annotated");
            }

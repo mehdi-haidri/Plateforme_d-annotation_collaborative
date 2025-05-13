@@ -17,6 +17,7 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
 
@@ -34,7 +35,7 @@ public class DataSetService {
        dataset = parseAndSaveCsv(dataSetDto.getFile() ,dataset);
 
        if(!dataSetDto.getAnnotators().isEmpty()){
-           saveAnnotators(dataset, dataSetDto.getAnnotators());
+           saveAnnotators(dataset, dataSetDto.getAnnotators() , dataSetDto.getDatelimit());
            dataset.setAnnotated(true);
        }
 
@@ -45,7 +46,7 @@ public class DataSetService {
     public  Dataset saveDateSet(Dataset dataset) {
         return  dataSetRepository.save(dataset);
     }
-    public void saveAnnotators(Dataset dataset, List<Long> annotatorsIds) {
+    public void saveAnnotators(Dataset dataset, List<Long> annotatorsIds ,  Date datelimit) {
         List<Annotator> annotators = userSevice.findAllAnnotatorsById(annotatorsIds);
         List <TextCouple> textCouples = textCoupleService.getTextCouples(dataset);
         Collections.shuffle(textCouples);
@@ -59,6 +60,7 @@ public class DataSetService {
             newTask.setDataset(dataset);
             newTask.setSize(newTextCouples.size());
             newTask.setAdvancement(0d);
+            newTask.setLimitDate(datelimit);
             Task savedTask  = taskService.saveTask(newTask);
             newTextCouples.forEach(textCouple -> textCouple.setTask(savedTask));
             textCoupleService.saveTextCouples(newTextCouples);

@@ -45,7 +45,7 @@ public class UserSevice {
             user.setRole(userRole);
             user.setFirstName(userDto.getFirstName());
             user.setLastName(userDto.getLastName());
-            user.setState(Boolean.TRUE);
+            user.setState(true);
             return user;
         }
         return null;

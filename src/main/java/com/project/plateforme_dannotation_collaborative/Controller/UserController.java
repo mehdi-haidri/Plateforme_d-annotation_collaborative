@@ -1,22 +1,25 @@
 package com.project.plateforme_dannotation_collaborative.Controller;
 
 
+import com.project.plateforme_dannotation_collaborative.Dto.AnnotatorsMinResponseDto;
 import com.project.plateforme_dannotation_collaborative.Dto.UserDto;
 import com.project.plateforme_dannotation_collaborative.Model.User;
+import com.project.plateforme_dannotation_collaborative.Service.AnnotatorSevice;
 import com.project.plateforme_dannotation_collaborative.Service.UserSevice;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/app/v1/users")
 @RequiredArgsConstructor
+@CrossOrigin(originPatterns = "*")
 public class UserController {
     private final UserSevice userSevice;
+    private final AnnotatorSevice annotatorSevice;
     @PostMapping("/addUser")
     public ResponseEntity<?> addUser(@RequestBody UserDto user){
 
@@ -31,6 +34,16 @@ public class UserController {
             response.getData().put("error" , e.getMessage());
             return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
+    }
+
+    @GetMapping("/annotators/{state}")
+    public ResponseEntity<?> getAnnotators( @PathVariable Boolean state){
+        System.out.println(state);
+        Response response  = new Response();
+        List<AnnotatorsMinResponseDto> annotators = annotatorSevice.getAnnotatorsByState(state);
+        response.setError(false);
+        response.getData().put("annotators" , annotators);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
 }

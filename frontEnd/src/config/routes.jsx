@@ -2,6 +2,8 @@ import { useRoutes } from "react-router-dom";
 import Layout from "../Admin/Layout";
 
 import Datasets from "../Admin/dataset/Datasets";
+import DatasetForm from "../Admin/dataset/DatasetForm";
+import AddAnnotators from "../Admin/dataset/AddAnnotators";
 
 const Routes = [
     {
@@ -14,8 +16,17 @@ const Routes = [
             },
             {
                 path: "datasets",
-                element: <Datasets/>
-            }
+                element: <Datasets />,
+            
+            },
+            {
+                        path: "datasets/AddDataset",
+                        element: <DatasetForm/>
+                    },
+                    {
+                        path: "datasets/add-annotators/:id",
+                        element: <AddAnnotators/>
+                    }
         ]
     }
 ]
