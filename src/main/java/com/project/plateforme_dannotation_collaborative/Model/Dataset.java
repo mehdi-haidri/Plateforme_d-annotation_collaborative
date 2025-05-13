@@ -19,6 +19,7 @@ public class Dataset {
      Long id;
      String name;
      String description;
+     Integer size;
      Double advancement = 0d;
      Boolean annotated = false;
 

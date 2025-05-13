@@ -1,10 +1,9 @@
 package com.project.plateforme_dannotation_collaborative.Service;
 
 import com.project.plateforme_dannotation_collaborative.Dto.DataSetDto;
+import com.project.plateforme_dannotation_collaborative.Dto.DatasetMinResposeDto;
 import com.project.plateforme_dannotation_collaborative.Model.*;
 import com.project.plateforme_dannotation_collaborative.Repository.DataSetRepository;
-import com.project.plateforme_dannotation_collaborative.Repository.TextCoupleRepository;
-import com.project.plateforme_dannotation_collaborative.Repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
@@ -16,7 +15,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.Collection;
+
 import java.util.Collections;
 import java.util.List;
 
@@ -32,17 +31,21 @@ public class DataSetService {
     public Dataset saveDateSet(DataSetDto dataSetDto) throws IOException {
 
        Dataset dataset =  dataSetRepository.save(DtoToDataseet(dataSetDto));
-       parseAndSaveCsv(dataSetDto.getFile() ,dataset);
+       dataset = parseAndSaveCsv(dataSetDto.getFile() ,dataset);
 
        if(!dataSetDto.getAnnotators().isEmpty()){
            saveAnnotators(dataset, dataSetDto.getAnnotators());
            dataset.setAnnotated(true);
-          return dataSetRepository.save(dataset);
        }
 
+       dataSetRepository.save(dataset);
        return dataset;
     }
-    private void saveAnnotators(Dataset dataset, List<Long> annotatorsIds) {
+
+    public  Dataset saveDateSet(Dataset dataset) {
+        return  dataSetRepository.save(dataset);
+    }
+    public void saveAnnotators(Dataset dataset, List<Long> annotatorsIds) {
         List<Annotator> annotators = userSevice.findAllAnnotatorsById(annotatorsIds);
         List <TextCouple> textCouples = textCoupleService.getTextCouples(dataset);
         Collections.shuffle(textCouples);
@@ -76,10 +79,11 @@ public class DataSetService {
         dataset.setClasses(classes);
         return dataset;
     }
-    public void parseAndSaveCsv(MultipartFile file  ,Dataset dataset) throws IOException {
+    public Dataset parseAndSaveCsv(MultipartFile file  ,Dataset dataset) throws IOException {
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(file.getInputStream()));
              CSVParser csvParser = new CSVParser(reader, CSVFormat.DEFAULT.withFirstRecordAsHeader().withTrim())) {
-            for (CSVRecord csvRecord : csvParser) {
+             dataset.setSize(csvParser.getRecords().size());
+             for (CSVRecord csvRecord : csvParser) {
                 String text1 = csvRecord.get("text1");
                 String text2 = csvRecord.get("text2");
                 TextCouple line = new TextCouple();
@@ -89,5 +93,25 @@ public class DataSetService {
                 textCoupleService.saveTextCouple(line);
             }
         }
+
+        return  dataset;
+    }
+
+    public Dataset getDataset(Long id){
+        return  dataSetRepository.findById(id).orElse(null);
+    }
+
+    public List<DatasetMinResposeDto> getAllDatasets() {
+
+       List<Dataset> datasets  = dataSetRepository.findAll();
+       return  datasets.stream()
+               .map(dataset ->
+                       new DatasetMinResposeDto(dataset.getId()
+                               , dataset.getName()
+                               , dataset.getDescription()
+                               , dataset.getAdvancement()
+                               , dataset.getAnnotated()
+                               , dataset.getSize() , dataset.getClasses().size()))
+               .toList();
     }
 }
