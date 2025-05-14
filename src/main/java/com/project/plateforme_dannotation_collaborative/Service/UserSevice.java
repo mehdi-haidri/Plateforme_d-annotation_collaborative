@@ -45,7 +45,6 @@ public class UserSevice {
             user.setRole(userRole);
             user.setFirstName(userDto.getFirstName());
             user.setLastName(userDto.getLastName());
-            user.setState(true);
             return user;
         }
         return null;
@@ -61,6 +60,11 @@ public class UserSevice {
 
     public List<Annotator>  findAllAnnotatorsById(List<Long> ids) {
         return  annotatorRepository.findAllById(ids);
+    }
+
+    public void updateUser(UserDto user) {
+        User userToUpdate = DToToUser(user);
+        if(userToUpdate != null) userRepository.save(userToUpdate);
     }
 
 }

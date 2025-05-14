@@ -1,8 +1,21 @@
+import { useEffect } from "react";
 
 
-function Alert({type , message , setAlert}) {
+function Alert({ type, message, setAlert }) {
+  
+  const alertTypeClasses = {
+  success: 'alert-success',
+  error: 'alert-error',
+  warning: 'alert-warning',
+  };
+  
+  useEffect(() => {
+    setTimeout(() => {
+      setAlert(null);
+    }, 5000);
+  })
   return (
-      <div role='alert' className={`p-1 alert alert-${type} text-gray-800  absolute top-0 right-[40%]`}>
+      <div role='alert' className={`p-1 alert ${alertTypeClasses[type]} text-gray-800  absolute top-0 right-[40%]`}>
   <span className="flex items-center  gap-3 text-md font-medium">{message}<svg onClick={e => {
                         e.preventDefault();
                         setAlert(null);
@@ -22,5 +35,7 @@ function Alert({type , message , setAlert}) {
 </div>
   )
 }
+
+
 
 export default Alert

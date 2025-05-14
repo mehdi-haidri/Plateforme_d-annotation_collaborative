@@ -11,7 +11,7 @@ import java.util.List;
 @Getter
 @Setter
 public class Annotators_DatasetDto {
-    List<Long>Annotators;
+    List<Long>annotators;
     Long datasetId ;
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     Date datelimit;

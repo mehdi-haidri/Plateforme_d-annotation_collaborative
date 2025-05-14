@@ -6,6 +6,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.project.plateforme_dannotation_collaborative.Dto.Annotators_DatasetDto;
 import com.project.plateforme_dannotation_collaborative.Dto.DataSetDto;
+import com.project.plateforme_dannotation_collaborative.Dto.DatasetDetailsDto;
 import com.project.plateforme_dannotation_collaborative.Dto.DatasetMinResposeDto;
 import com.project.plateforme_dannotation_collaborative.Model.Dataset;
 import com.project.plateforme_dannotation_collaborative.Service.DataSetService;
@@ -98,6 +99,15 @@ public class DataSetController {
         response.setError(false);
         List<DatasetMinResposeDto> datasets = dataSetService.getAllDatasets();
         response.getData().put("datasets", datasets);
+        return new ResponseEntity<>(response , HttpStatus.OK);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity <?> GetDataset(@PathVariable Long id){
+        Response response = new Response();
+        response.setError(false);
+        DatasetDetailsDto dataset = dataSetService.getDatasetDetails(id);
+        response.getData().put("dataset" , dataset);
         return new ResponseEntity<>(response , HttpStatus.OK);
     }
 }

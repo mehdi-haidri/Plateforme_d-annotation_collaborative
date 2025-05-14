@@ -1,7 +1,9 @@
 package com.project.plateforme_dannotation_collaborative.Service;
 
 import com.project.plateforme_dannotation_collaborative.Dto.DataSetDto;
+import com.project.plateforme_dannotation_collaborative.Dto.DatasetDetailsDto;
 import com.project.plateforme_dannotation_collaborative.Dto.DatasetMinResposeDto;
+import com.project.plateforme_dannotation_collaborative.Dto.TaskDto;
 import com.project.plateforme_dannotation_collaborative.Model.*;
 import com.project.plateforme_dannotation_collaborative.Repository.DataSetRepository;
 import lombok.RequiredArgsConstructor;
@@ -33,6 +35,7 @@ public class DataSetService {
 
        Dataset dataset =  dataSetRepository.save(DtoToDataseet(dataSetDto));
        dataset = parseAndSaveCsv(dataSetDto.getFile() ,dataset);
+        System.out.println("after");
 
        if(!dataSetDto.getAnnotators().isEmpty()){
            saveAnnotators(dataset, dataSetDto.getAnnotators() , dataSetDto.getDatelimit());
@@ -82,10 +85,12 @@ public class DataSetService {
         return dataset;
     }
     public Dataset parseAndSaveCsv(MultipartFile file  ,Dataset dataset) throws IOException {
+
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(file.getInputStream()));
              CSVParser csvParser = new CSVParser(reader, CSVFormat.DEFAULT.withFirstRecordAsHeader().withTrim())) {
-             dataset.setSize(csvParser.getRecords().size());
+             int size = 0;
              for (CSVRecord csvRecord : csvParser) {
+                 size++;
                 String text1 = csvRecord.get("text1");
                 String text2 = csvRecord.get("text2");
                 TextCouple line = new TextCouple();
@@ -94,13 +99,31 @@ public class DataSetService {
                 line.setDataset(dataset);
                 textCoupleService.saveTextCouple(line);
             }
+             dataset.setSize(size);
         }
 
         return  dataset;
     }
 
     public Dataset getDataset(Long id){
-        return  dataSetRepository.findById(id).orElse(null);
+          Dataset dataset =dataSetRepository.findById(id).orElse(new Dataset());
+          return  dataset;
+    }
+
+    public DatasetDetailsDto getDatasetDetails(Long id){
+        Dataset dataset =dataSetRepository.findById(id).orElse(new Dataset());
+        Date date = dataset.getTasks().isEmpty() ?   null : dataset.getTasks().get(0).getLimitDate();
+        List<Long> annotators = dataset.getTasks().stream().map( t -> t.getAnnotator().getId()).toList();
+        List<String> classes = dataset.getClasses().stream().map(Classes::getName).toList();
+
+        return new DatasetDetailsDto(
+                dataset.getId() ,
+                date ,
+                dataset.getSize(),
+                dataset.getName() ,
+                dataset.getDescription() ,
+                classes,annotators ,dataset.getAdvancement() ,
+                dataset.getTasks().stream().map(t -> new TaskDto(t.getId() , t.getLimitDate() , t.getAdvancement() ,t.getSize() ,t.getAnnotator().getFirstName()+" "+ t.getAnnotator().getLastName())).toList());
     }
 
     public List<DatasetMinResposeDto> getAllDatasets() {

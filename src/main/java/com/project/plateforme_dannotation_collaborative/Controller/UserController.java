@@ -25,9 +25,15 @@ public class UserController {
 
         Response response  = new Response();
         try {
-            User newUser = userSevice.saveUser(user);
+            if(
+                    user.getId() ==null
+            ){
+            userSevice.saveUser(user);
+            }else {
+                userSevice.updateUser(user);
+            }
             response.setError(false);
-            response.getData().put("user" , newUser);
+            response.getData().put("message" , "added successfully");
         return new ResponseEntity<>(response, HttpStatus.OK);
         }catch (Exception e){
             response.setError(true);
@@ -45,5 +51,21 @@ public class UserController {
         response.getData().put("annotators" , annotators);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
+    @GetMapping("/annotators")
+    public ResponseEntity<?> getAnnotators( ){
+        Response response  = new Response();
+        List<AnnotatorsMinResponseDto> annotators = annotatorSevice.getAllAnnotators();
+        response.setError(false);
+        response.getData().put("annotators" , annotators);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
 
+    @GetMapping("/annotators/annotator/{id}")
+    public ResponseEntity<?> getAnnotator(@PathVariable Long id){
+        Response response  = new Response();
+        response.setError(false);
+        AnnotatorsMinResponseDto annotator = annotatorSevice.getAnnotatorById(id);
+        response.getData().put("annotator" , annotator);
+        return  new ResponseEntity<>(response, HttpStatus.OK);
+    }
 }

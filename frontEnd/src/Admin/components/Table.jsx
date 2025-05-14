@@ -1,5 +1,5 @@
-import React from 'react';
-import { data, Link } from 'react-router-dom';
+
+import {  Link } from 'react-router-dom';
 
 const Table = ( {colums , rows}) => {
   return (
@@ -23,21 +23,27 @@ const Table = ( {colums , rows}) => {
 
           {rows.map((row) => (
                     
+               
             <tr key={row.id} className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 border-gray-200 hover:bg-gray-50 dark:hover:bg-gray-600">
                <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">{row.id}</td>
-              {colums.map((col , index) => {
+              {  colums.map((col , index) => {
                 if (col.field !== 'id' && col.field !== 'action' && col.field !== 'status') {
+                  
                   return (
                     <td key={index} className="px-6 py-4">{row[col.field]}</td>
                   )
                 }
               })}
-                        <td className="px-6 py-2 text-right">
+                        <td className="px-6 py-2 ">
                          <Link to={`/datasets/add-annotators/${row.id}`} className="font-medium text-blue-600 dark:text-blue-500 hover:underline">
                           { row.status ? 'annotated' : <button  className="btn btn-soft btn-warning">Add annotators</button> }
                          </Link>
                        </td>
-                       <td className="px-6 py-4">{row.action}</td>
+              <td className="px-6 py-4">
+                <Link to={`/datasets/${row.id}`}>
+                  <button className="btn btn-soft btn-info">details</button>
+                </Link>
+                       </td>
                           </tr>
                      
                   ))}

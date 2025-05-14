@@ -24,4 +24,20 @@ public class AnnotatorSevice {
                 a.getState()
         )).toList();
     }
+
+    public List<AnnotatorsMinResponseDto> getAllAnnotators() {
+        List<Annotator>  annotators  = annotatorRepository.findAll();
+
+        return annotators.stream().map( a -> new AnnotatorsMinResponseDto(
+                a.getId() ,
+                a.getLastName(),
+                a.getFirstName(),
+                a.getState()
+        )).toList();
+    }
+
+    public AnnotatorsMinResponseDto  getAnnotatorById(Long id) {
+        Annotator annotator = annotatorRepository.findById(id).orElse(new Annotator());
+        return new AnnotatorsMinResponseDto(annotator.getId(), annotator.getLastName(), annotator.getFirstName(), annotator.getState());
+    }
 }

@@ -20,7 +20,7 @@ function Datasets() {
             width: 130,
           },
         {
-            field: 'Classes',
+            field: 'classes',
             width: 90,
         },
         {
@@ -57,10 +57,11 @@ function Datasets() {
                     classes: dataset.numberClasses,
                     advancement: dataset.advancement,
                     status: dataset.annotated,
-                    action: 'edit'
+                  
                  })
                 
             })
+          console.log(response);
             setRows(rows);
         } catch (error) {
           console.error(error);

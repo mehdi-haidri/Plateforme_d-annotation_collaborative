@@ -18,7 +18,7 @@ import java.util.List;
 @DiscriminatorValue("ANNO")
 public class Annotator extends User{
     String forAnnotator;
-    Boolean state ;
+    Boolean state = true ;
     @OneToMany(mappedBy = "annotator")
     @JsonManagedReference
     List<Task> tasks;

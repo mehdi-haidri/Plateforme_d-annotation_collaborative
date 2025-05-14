@@ -1,8 +1,10 @@
 import { useState, useRef, useEffect } from "react";
-import { useOutletContext } from "react-router-dom";
+import { useNavigate, useOutletContext } from "react-router-dom";
+import { DayPicker } from "react-day-picker";
 
 export default function DatasetForm() {
-
+  const [date, setDate] = useState(new Date());
+  const Navigate = useNavigate();
   const { setAlert } = useOutletContext();
   const [file, setFile] = useState(null);
   const [annotators, setAnnotators] = useState([
@@ -14,7 +16,6 @@ export default function DatasetForm() {
   const inputRef = useRef(null);
   const [classes, setClasses] = useState("");
   const [name, setName] = useState("");
-  const [datelimit, setDatelimit] = useState("2023-09-06");
   const [description, setDescription] = useState("");
 
   useEffect(() => {
@@ -46,7 +47,7 @@ export default function DatasetForm() {
     formData.append("annotators", JSON.stringify(selectedAnnotators.map((annotator) => annotator.id)));
     formData.append("classes",JSON.stringify (classes.split(";")));
     formData.append("description", description);
-    formData.append("datelimit", datelimit);
+    formData.append("datelimit", date?.toISOString().split('T')[0]);
 
     try {
       let response = await fetch('http://localhost:8080/app/v1/datasets/addDataset', {
@@ -59,6 +60,7 @@ export default function DatasetForm() {
         response = await response.json();
       console.log(response);
       setAlert({ type: "success", message: "Dataset created successfully" });
+      Navigate(`/datasets`);
      
     }catch (error) {
       
@@ -79,9 +81,11 @@ export default function DatasetForm() {
       <div>
         <h1 className="m-5 font-bold text-2xl">New Dataset</h1>
       </div>
-      <form  onSubmit={(e) =>  e.preventDefault()} className=" max-w-[95%] 2xl:max-w-[70%] mx-auto ">
-        <div className="grid md:grid-cols-4 md:gap-6">
-          <div className="col-span-2">
+
+      <div className="grid md:grid-cols-4 md:gap-6 max-w-[95%] 2xl:max-w-[80%] mx-auto ">
+        <form  onSubmit={(e) =>  e.preventDefault()} className=" col-span-2  w-full ">
+        
+         
             <div className="mb-5">
               <label
                 htmlFor="name"
@@ -156,8 +160,16 @@ export default function DatasetForm() {
               </button>
               <h1>{file && file.name}</h1>
             </div>
-          </div>
-          <div className=" col-span-2 grid md:grid-cols-3 md:gap-6">
+        <button
+          onClick={handleSubmit}
+          type="submit"
+          className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+        >
+          Save
+        </button>
+      </form>
+
+        <div className=" col-span-2 grid md:grid-cols-3 md:gap-6">
             <div className="col-span-2">
               <ul className="list bg-base-100 rounded-box shadow-md">
                 <li className="p-4 pb-2 text-xs opacity-60 tracking-wide">
@@ -173,9 +185,8 @@ export default function DatasetForm() {
                     <div className="content-center">
                       <div>{annotator.name}</div>
                     </div>
-                    <button onClick={e => e.preventDefault()} className="btn btn-square btn-ghost">
+                    <button className="btn btn-square btn-ghost">
                       <svg onClick={e => {
-                        e.preventDefault();
                         handleUnSelectedAnnotator(annotator);
                       }}
                         xmlns="http://www.w3.org/2000/svg"
@@ -194,23 +205,15 @@ export default function DatasetForm() {
                   </li>
                 ))}
               </ul>
-              {selectedAnnotators.length > 0 && <div className="mb-5">
-                <label
-                  htmlFor="Limit Date"
-                  className="block my-2 text-sm font-medium text-gray-900 dark:text-white"
-                >
-                  Limit Date
-                </label>
-                <input
-                  value={datelimit}
-                  onChange={(e) => setDatelimit(e.target.value)}
-                  type="Limit Date"
-                  id="Limit Date"
-                  placeholder="YYYY-MM-DD"
-                  required
-                  className="shadow-xs bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 dark:shadow-xs-light"
-                />
-              </div>}
+              {selectedAnnotators.length > 0 &&  <>
+                      <p className="input-label inline-block mx-2">limit date : </p>
+                       <button  popoverTarget="rdp-popover" className=" my-4 input focus:outline-none" style={{ anchorName: "--rdp" } }>
+                      {date ? date.toLocaleDateString() : "Pick a date"}
+                    </button>
+                    <div popover="auto" id="rdp-popover" className="dropdown" style={{ positionAnchor: "--rdp" }}>
+                      <DayPicker className="react-day-picker" mode="single" selected={date} onSelect={setDate} />
+                    </div>
+                  </>}
             </div>
             <div className="dropdown dropdown-down">
               <div tabIndex={0} role="button" className="btn m-1">
@@ -230,17 +233,10 @@ export default function DatasetForm() {
                 ))}
               </ul>
             </div>
-          </div>
         </div>
-
-        <button
-          onClick={handleSubmit}
-          type="submit"
-          className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
-        >
-          Save
-        </button>
-      </form>
+        
+      </div>
+      
     </>
   );
 }
