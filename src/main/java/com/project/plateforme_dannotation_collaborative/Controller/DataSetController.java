@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
@@ -85,6 +86,7 @@ public class DataSetController {
     }
 
 
+    @PreAuthorize("hasRole('ROLE_ANNOTATOR')") // or hasAuthority('ROLE_ADMIN')
     @GetMapping("/datasets")
     public ResponseEntity <?> GetDatasets(){
         Response response = new Response();

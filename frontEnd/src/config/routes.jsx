@@ -10,10 +10,15 @@ import Annotators from "../Admin/annotators/Annotators";
 import AddAnnotator from "../Admin/annotators/AddAnnotator";
 import UpdateAnnotator from "../Admin/annotators/UpdateAnnotator";
 import DatasetDetails from "../Admin/dataset/DatasetDetails";
+import SignInSection from "../Login/SignInSection";
 
 const Routes = [
     {
         path: "/",
+        element: <SignInSection/>
+    },
+    {
+        path: "/admin",
         element: <Layout />,
         children: [
             {

@@ -3,6 +3,7 @@ package com.project.plateforme_dannotation_collaborative.Controller;
 
 import com.project.plateforme_dannotation_collaborative.Dto.AnnotatorsMinResponseDto;
 import com.project.plateforme_dannotation_collaborative.Dto.UserDto;
+import com.project.plateforme_dannotation_collaborative.Dto.UserLoginDto;
 import com.project.plateforme_dannotation_collaborative.Model.User;
 import com.project.plateforme_dannotation_collaborative.Service.AnnotatorSevice;
 import com.project.plateforme_dannotation_collaborative.Service.UserSevice;
@@ -69,4 +70,16 @@ public class UserController {
         response.getData().put("annotator" , annotator);
         return  new ResponseEntity<>(response, HttpStatus.OK);
     }
+
+
+    @PostMapping("/login")
+    public String login(@RequestBody UserLoginDto user) {
+        Response response  = new Response() ;
+        return userSevice.verify(user);
+    }
+    @PostMapping("/register")
+    public ResponseEntity<?> register(@RequestBody UserDto user) {
+        return addUser(user);
+    }
+
 }

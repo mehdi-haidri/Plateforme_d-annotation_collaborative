@@ -2,6 +2,8 @@ package com.project.plateforme_dannotation_collaborative.Service;
 
 
 import com.project.plateforme_dannotation_collaborative.Dto.UserDto;
+import com.project.plateforme_dannotation_collaborative.Dto.UserLoginDto;
+import com.project.plateforme_dannotation_collaborative.Jwt.Service.JWTService;
 import com.project.plateforme_dannotation_collaborative.Model.Admin;
 import com.project.plateforme_dannotation_collaborative.Model.Annotator;
 import com.project.plateforme_dannotation_collaborative.Model.Role;
@@ -11,8 +13,13 @@ import com.project.plateforme_dannotation_collaborative.Repository.RoleRepositor
 import com.project.plateforme_dannotation_collaborative.Repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -23,6 +30,11 @@ public class UserSevice {
     private final RoleRepository roleRepository;
     private final AnnotatorRepository annotatorRepository;
 
+
+    private final JWTService jwtService;
+    private  final AuthenticationManager authManager;
+
+    private BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(12);
     private User DToToUser(UserDto userDto) {
         Role userRole = roleRepository.findByName(userDto.getRole()).orElse(null);
         if(userRole == null) {
@@ -51,6 +63,7 @@ public class UserSevice {
     }
     public User saveUser(UserDto userDto) throws Exception {
         User user = DToToUser(userDto);
+        user.setPassword(encoder.encode(user.getPassword()));
         if(user != null) {
             return userRepository.save(user);
         }
@@ -64,7 +77,19 @@ public class UserSevice {
 
     public void updateUser(UserDto user) {
         User userToUpdate = DToToUser(user);
+        user.setPassword(encoder.encode(user.getPassword()));
         if(userToUpdate != null) userRepository.save(userToUpdate);
+    }
+
+    public String verify(UserLoginDto user) {
+        Authentication authentication = authManager.authenticate(new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword()));
+        if (authentication.isAuthenticated()) {
+            String role = userRepository.findByEmail(user.getUsername()).getRole().getName();
+            List <String> roles = List.of(role);
+            return jwtService.generateToken(user.getUsername() , roles);
+        } else {
+            return "fail";
+        }
     }
 
 }

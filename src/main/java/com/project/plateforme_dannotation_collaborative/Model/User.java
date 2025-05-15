@@ -23,4 +23,5 @@ public abstract class User {
     @ManyToOne
     @JsonManagedReference
     Role role;
+    Boolean state = true ;
 }
