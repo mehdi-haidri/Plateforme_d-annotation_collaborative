@@ -43,7 +43,13 @@ function Datasets() {
     
     const fetchData = async () => {
         try {
-          let response = await fetch('http://localhost:8080/app/v1/datasets/datasets');
+          let response = await fetch('http://localhost:8080/app/v1/datasets/datasets', {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+               'Authorization': `Bearer ${localStorage.getItem('token')}`
+            },
+          });
           if (!response.ok) {
            throw new Error('Network response was not ok');
            }

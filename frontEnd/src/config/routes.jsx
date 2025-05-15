@@ -11,6 +11,7 @@ import AddAnnotator from "../Admin/annotators/AddAnnotator";
 import UpdateAnnotator from "../Admin/annotators/UpdateAnnotator";
 import DatasetDetails from "../Admin/dataset/DatasetDetails";
 import SignInSection from "../Login/SignInSection";
+import Midlware from "../Midlware";
 
 const Routes = [
     {
@@ -19,7 +20,7 @@ const Routes = [
     },
     {
         path: "/admin",
-        element: <Layout />,
+        element: <Midlware role="admin"  > <Layout /></Midlware> ,
         children: [
             {
                 path: "home",

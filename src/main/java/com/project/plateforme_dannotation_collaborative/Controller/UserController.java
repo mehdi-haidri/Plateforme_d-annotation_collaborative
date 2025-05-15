@@ -73,13 +73,20 @@ public class UserController {
 
 
     @PostMapping("/login")
-    public String login(@RequestBody UserLoginDto user) {
-        Response response  = new Response() ;
-        return userSevice.verify(user);
+    public ResponseEntity<?> login(@RequestBody UserLoginDto user) {
+        Response response = userSevice.verify(user);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
+
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody UserDto user) {
         return addUser(user);
     }
-
+    @GetMapping("/isAuth")
+    public ResponseEntity<?> isAuth() {
+        Response response  = new Response();
+        response.setError(false);
+        response.getData().put("isAuth" , "true");
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
 }

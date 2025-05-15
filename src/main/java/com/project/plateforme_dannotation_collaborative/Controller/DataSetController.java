@@ -86,7 +86,7 @@ public class DataSetController {
     }
 
 
-    @PreAuthorize("hasRole('ROLE_ANNOTATOR')") // or hasAuthority('ROLE_ADMIN')
+     // or hasAuthority('ROLE_ADMIN')
     @GetMapping("/datasets")
     public ResponseEntity <?> GetDatasets(){
         Response response = new Response();

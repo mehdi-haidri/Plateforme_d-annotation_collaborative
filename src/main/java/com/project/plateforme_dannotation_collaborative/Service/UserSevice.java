@@ -1,6 +1,7 @@
 package com.project.plateforme_dannotation_collaborative.Service;
 
 
+import com.project.plateforme_dannotation_collaborative.Controller.Response;
 import com.project.plateforme_dannotation_collaborative.Dto.UserDto;
 import com.project.plateforme_dannotation_collaborative.Dto.UserLoginDto;
 import com.project.plateforme_dannotation_collaborative.Jwt.Service.JWTService;
@@ -29,8 +30,6 @@ public class UserSevice {
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
     private final AnnotatorRepository annotatorRepository;
-
-
     private final JWTService jwtService;
     private  final AuthenticationManager authManager;
 
@@ -81,15 +80,28 @@ public class UserSevice {
         if(userToUpdate != null) userRepository.save(userToUpdate);
     }
 
-    public String verify(UserLoginDto user) {
-        Authentication authentication = authManager.authenticate(new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword()));
+    public Response verify(UserLoginDto user) {
+        Authentication authentication = authManager.authenticate(new UsernamePasswordAuthenticationToken(user.getUserName(), user.getPassword()));
+            Response response = new Response();
         if (authentication.isAuthenticated()) {
-            String role = userRepository.findByEmail(user.getUsername()).getRole().getName();
+            String role = userRepository.findByEmail(user.getUserName()).getRole().getName();
             List <String> roles = List.of(role);
-            return jwtService.generateToken(user.getUsername() , roles);
+
+            String token = jwtService.generateToken(user.getUserName() , roles);
+            response.setError(false);
+            response.getData().put("token",token);
+            response.getData().put("role", role);
+
         } else {
-            return "fail";
+
+            response.setError(false);
+            response.getData().put("error", "Authentication failed");
+
         }
+        return response;
     }
 
+    public boolean checkAuth(String token) {
+        return jwtService.isTokenExpired(token);
+    }
 }
