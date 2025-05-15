@@ -6,6 +6,7 @@ import com.project.plateforme_dannotation_collaborative.Dto.UserDto;
 import com.project.plateforme_dannotation_collaborative.Model.User;
 import com.project.plateforme_dannotation_collaborative.Service.AnnotatorSevice;
 import com.project.plateforme_dannotation_collaborative.Service.UserSevice;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,7 +22,7 @@ public class UserController {
     private final UserSevice userSevice;
     private final AnnotatorSevice annotatorSevice;
     @PostMapping("/addUser")
-    public ResponseEntity<?> addUser(@RequestBody UserDto user){
+    public ResponseEntity<?> addUser(@Valid @RequestBody UserDto user){
 
         Response response  = new Response();
         try {

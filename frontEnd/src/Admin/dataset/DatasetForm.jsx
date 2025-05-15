@@ -6,7 +6,8 @@ export default function DatasetForm() {
   const [date, setDate] = useState(new Date());
   const Navigate = useNavigate();
   const { setAlert } = useOutletContext();
-  const [file, setFile] = useState(null);
+  const [file, setFile] = useState();
+  const requestError = useRef({});
   const [annotators, setAnnotators] = useState([
     { id: 1, name: "test" },
     { id: 2, name: "test2" },
@@ -17,11 +18,12 @@ export default function DatasetForm() {
   const [classes, setClasses] = useState("");
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
-
+  const [validation, setValidation] = useState({});
+ 
   useEffect(() => {
     fetchAnnotators();
-
-  },[])
+  }, [])
+ 
   const fetchAnnotators = async () => {
     try {
       let response = await fetch(
@@ -41,11 +43,12 @@ export default function DatasetForm() {
   };
 
   const handleSubmit = async () => {
+    console.log(classes.split(";").length > 1 ? classes.split(";") : "");
     const formData = new FormData();
-    formData.append("file", file);
+    file && formData.append("file", file);
     formData.append("name", name);
     formData.append("annotators", JSON.stringify(selectedAnnotators.map((annotator) => annotator.id)));
-    formData.append("classes",JSON.stringify (classes.split(";")));
+    classes.split(";").length > 1 && formData.append("classes",JSON.stringify(classes.split(";")));
     formData.append("description", description);
     formData.append("datelimit", date?.toISOString().split('T')[0]);
 
@@ -54,17 +57,27 @@ export default function DatasetForm() {
       method: "POST",
       body: formData,
       })
-      if (!response.ok) {
-        throw new Error('Network response was not ok');
-        }
-        response = await response.json();
+      
+      if (!response.ok || response?.error == true) {
+        requestError.current = response
+        throw new Error("Network response was not ok");
+      }
+      response = await response.json();
       console.log(response);
       setAlert({ type: "success", message: "Dataset created successfully" });
       Navigate(`/datasets`);
      
-    }catch (error) {
-      
+    } catch (error) {
+      if (requestError.satus == 500) {
+        setAlert({ type: "error", message: "server Error" });
+      } else if (requestError.current.status == 400 ) {
+        const response = await requestError.current.json()
+        response.data?.errorType == "validation" ? setValidation(response.data.errors) : setAlert({ type: "error", message: "Bad request" });
+        console.log(response.data.errors);
+      }
     }
+      
+    
    
   }
   const handleSelectedAnnotator = (annotator) => {
@@ -94,14 +107,15 @@ export default function DatasetForm() {
                 Name
               </label>
               <input
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                type="name"
-                id="name"
-                placeholder="dataset name"
-                required
-                className="shadow-xs bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 dark:shadow-xs-light"
-              />
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              type="text"
+              id="name"
+              placeholder="dataset name"
+              required
+              className={`input validator  ${validation?.name ? 'border-red-500' : 'border-gray-300'}  shadow-xs  bg-gray-50  text-gray-900 text-sm rounded-lg block w-full p-2.5 dark:bg-gray-700  dark:placeholder-gray-400 dark:text-white   dark:shadow-xs-light`}
+            />
+            <div className="validator-hint">{validation?.name}</div>
             </div>
 
             <div className="mb-5">
@@ -114,13 +128,14 @@ export default function DatasetForm() {
               <input
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
-                type="Description"
+                type="text"
                 id="Description"
                 placeholder="Description"
                 required
-                className="shadow-xs bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 dark:shadow-xs-light"
+              className={`input validator  ${validation?.description ? 'border-red-500' : 'border-gray-300'}  shadow-xs  bg-gray-50  text-gray-900 text-sm rounded-lg block w-full p-2.5 dark:bg-gray-700  dark:placeholder-gray-400 dark:text-white   dark:shadow-xs-light`}
               />
-            </div>
+           <div id="description" className="validator-hint">{validation?.description}</div>
+          </div>
 
             <div className="mb-5">
               <label
@@ -136,11 +151,13 @@ export default function DatasetForm() {
                 placeholder="A;B;C"
                 id="labels"
                 required
-                className="shadow-xs bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 dark:shadow-xs-light"
-              />
+              className={`input validator  ${validation?.classes ? 'border-red-500' : 'border-gray-300'}  shadow-xs  bg-gray-50  text-gray-900 text-sm rounded-lg block w-full p-2.5 dark:bg-gray-700  dark:placeholder-gray-400 dark:text-white   dark:shadow-xs-light`}
+            />
+            <div className="validator-hint">{validation?.classes}</div>
             </div>
 
-            <div className="mb-5 flex">
+          <div className="mb-5 ">
+            <div className="flex ">
               <button
                 onClick={() => {
                   inputRef.current.click();
@@ -159,6 +176,8 @@ export default function DatasetForm() {
                 Add file
               </button>
               <h1>{file && file.name}</h1>
+              </div>
+           {  validation?.file && <div className="validator-hint visible text-red-500 ">{validation?.file}</div>}
             </div>
         <button
           onClick={handleSubmit}

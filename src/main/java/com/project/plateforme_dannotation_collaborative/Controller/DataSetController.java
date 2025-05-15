@@ -4,12 +4,10 @@ package com.project.plateforme_dannotation_collaborative.Controller;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.project.plateforme_dannotation_collaborative.Dto.Annotators_DatasetDto;
-import com.project.plateforme_dannotation_collaborative.Dto.DataSetDto;
-import com.project.plateforme_dannotation_collaborative.Dto.DatasetDetailsDto;
-import com.project.plateforme_dannotation_collaborative.Dto.DatasetMinResposeDto;
+import com.project.plateforme_dannotation_collaborative.Dto.*;
 import com.project.plateforme_dannotation_collaborative.Model.Dataset;
 import com.project.plateforme_dannotation_collaborative.Service.DataSetService;
+import jakarta.validation.Valid;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -34,24 +32,18 @@ public class DataSetController {
     private final DataSetService dataSetService;
 
     @PostMapping("/addDataset")
-    public ResponseEntity <?> AddDataSet(
-            @RequestPart("name") String name,
-                                          @RequestParam("datelimit") @DateTimeFormat(pattern = "yyyy-MM-dd") Date datelimit,
-                                          @RequestPart("description") String description,
-                                          @RequestPart("classes") String classesJson,
-                                          @RequestPart("annotators") String annotatorsJson,
-                                          @RequestPart("file") MultipartFile file)  {
+    public ResponseEntity <?> AddDataSet( @Valid @ModelAttribute  DatasetRequestDto dataSetRequestDto)  {
 
         Response response = new Response();
         try {
         ObjectMapper objectMapper = new ObjectMapper();
         DataSetDto dto = new DataSetDto();
-        dto.setName(name);
-        dto.setDescription(description);
-        dto.setFile(file);
-        dto.setDatelimit(datelimit);
-        dto.setAnnotators(objectMapper.readValue(annotatorsJson, new TypeReference<List<Long>>() {}));
-        dto.setClasses(objectMapper.readValue(classesJson, new TypeReference<List<String>>(){}));
+        dto.setName(dataSetRequestDto.getName());
+        dto.setDescription(dataSetRequestDto.getDescription());
+        dto.setFile(dataSetRequestDto.getFile());
+        dto.setDatelimit(dataSetRequestDto.getDatelimit());
+        dto.setAnnotators(objectMapper.readValue(dataSetRequestDto.getAnnotators(), new TypeReference<List<Long>>() {}));
+        dto.setClasses(objectMapper.readValue(dataSetRequestDto.getClasses(), new TypeReference<List<String>>(){}));
         Dataset newDataset= dataSetService.saveDateSet(dto);
         response.setError(false);
         response.getData().put("dataset", newDataset);
