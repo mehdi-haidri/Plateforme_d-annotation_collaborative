@@ -1,10 +1,9 @@
 package com.project.plateforme_dannotation_collaborative.Controller;
 
 
-import com.project.plateforme_dannotation_collaborative.Dto.AnnotatorsMinResponseDto;
-import com.project.plateforme_dannotation_collaborative.Dto.UserDto;
+import com.project.plateforme_dannotation_collaborative.Dto.Admin.AnnotatorsMinResponseDto;
+import com.project.plateforme_dannotation_collaborative.Dto.Admin.UserDto;
 import com.project.plateforme_dannotation_collaborative.Dto.UserLoginDto;
-import com.project.plateforme_dannotation_collaborative.Model.User;
 import com.project.plateforme_dannotation_collaborative.Service.AnnotatorSevice;
 import com.project.plateforme_dannotation_collaborative.Service.UserSevice;
 import jakarta.validation.Valid;
@@ -66,7 +65,7 @@ public class UserController {
     public ResponseEntity<?> getAnnotator(@PathVariable Long id){
         Response response  = new Response();
         response.setError(false);
-        AnnotatorsMinResponseDto annotator = annotatorSevice.getAnnotatorById(id);
+        AnnotatorsMinResponseDto annotator = annotatorSevice.getAnnotatorDtoById(id);
         response.getData().put("annotator" , annotator);
         return  new ResponseEntity<>(response, HttpStatus.OK);
     }

@@ -1,11 +1,11 @@
 @import "tailwindcss";
-
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
 @plugin "daisyui";
-@custom-variant dark (&:where(.dark, .dark *));
+
+/* @tailwind base;
+@tailwind components;
+@tailwind utilities; */
+
+/* @custom-variant dark (&:where(.dark, .dark *)); */
 
 :root {
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
@@ -16,6 +16,6 @@
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
+  -webkit-font-smoothing: antialiased;  
   -moz-osx-font-smoothing: grayscale;
 }

@@ -1,5 +1,7 @@
 import { useRef, useState } from "react";
 import { useNavigate, useOutletContext } from "react-router-dom";
+import roles from "../../config/roles";
+const API_URL = import.meta.env.VITE_API_URL;
 
 function AddAnnotator() {
   const Navigate = useNavigate();
@@ -10,13 +12,17 @@ function AddAnnotator() {
   const [password, setPassword] = useState("");
   const [validation, setValidation] = useState({});
   const requestError = useRef({});
+  const [isLoading, setIsLoading] = useState(false);
+
 
   const handleSubmit = async () => {
+    setIsLoading(true);
     try {
-      let response = await fetch("http://localhost:8080/app/v1/users/addUser", {
+      let response = await fetch(API_URL+"users/addUser", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          "Authorization": `Bearer ${localStorage.getItem('token')}`
         },
         body: JSON.stringify({
           firstName,
@@ -28,13 +34,14 @@ function AddAnnotator() {
       });
 
       if (!response.ok || response?.error == true) {
+        console.log(response);
         requestError.current = response;
         throw new Error("Network response was not ok");
       }
       response = await response.json();
       console.log(response);
       setAlert({ type: "success", message: "Annotator created successfully" });
-      Navigate(`/annotators`);
+      Navigate(`/admin/annotators`);
     } catch (error) {
       if (requestError.satus == 500) {
         setAlert({ type: "error", message: "server Error" });
@@ -46,6 +53,7 @@ function AddAnnotator() {
         console.log(response.data.errors);
       }
     }
+    setIsLoading(false);
   };
 
   return (
@@ -106,7 +114,7 @@ function AddAnnotator() {
           <input
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            type="text"
+            type="email"
             placeholder="Email"
             id="email"
             required
@@ -135,9 +143,10 @@ function AddAnnotator() {
         <button
           onClick={handleSubmit}
           type="submit"
-          className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+          className="text-white min-h-[42px]  bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
         >
-          Save
+                  {isLoading ? <span className="loading loading-dots loading-md"></span>: "Save"}
+
         </button>
       </form>
     </>

@@ -5,7 +5,8 @@ import { useNavigate } from "react-router-dom";
 const API_URL = import.meta.env.VITE_API_URL;
 function Midlware({ children: next, role }) {
     const navigate = useNavigate();
-    const isTokenExpired = async () => {
+  const isTokenExpired = async () => {
+      console.log(localStorage.getItem('token'));
     try {
         const response = await fetch(`${API_URL}users/isAuth`, {
             method: 'GET',
@@ -29,9 +30,10 @@ function Midlware({ children: next, role }) {
     };
 
   useEffect(() => {
+    console.log(role);
     const checkAuth = async () => {
-      if (localStorage.getItem("token") === null || await isTokenExpired()) {
-        navigate("/");
+      if (localStorage.getItem("token") === null || await isTokenExpired() || role !== localStorage.getItem("role")) {
+        navigate("/login");
       }
     };
     checkAuth();

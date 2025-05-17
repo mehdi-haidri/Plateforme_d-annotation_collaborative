@@ -6,7 +6,7 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.format.annotation.DateTimeFormat;
+import org.hibernate.annotations.CreationTimestamp;
 
 import java.util.Date;
 import java.util.List;
@@ -32,6 +32,12 @@ public class Task {
     Dataset dataset;
 
     @OneToMany(mappedBy = "task")
-            @JsonManagedReference
+            @JsonBackReference
     List<TextCouple> textCouples;
+
+    @CreationTimestamp  // ✅ Automatically set when entity is created
+    @Temporal(TemporalType.DATE)
+    private Date createdAt;
+
+    private  Integer checkpoint = 0;
 }

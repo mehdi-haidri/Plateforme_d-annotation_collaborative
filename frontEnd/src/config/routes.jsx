@@ -11,7 +11,11 @@ import AddAnnotator from "../Admin/annotators/AddAnnotator";
 import UpdateAnnotator from "../Admin/annotators/UpdateAnnotator";
 import DatasetDetails from "../Admin/dataset/DatasetDetails";
 import SignInSection from "../Login/SignInSection";
+import AnnotatorLayout from "../Annotator/Layout"
 import Midlware from "../Midlware";
+import AnnotatorTaskList from "../Annotator/task/Tasks";
+import roles from "./roles";
+import TextCouples from "../Annotator/task/TextCouples";
 
 const Routes = [
     {
@@ -20,7 +24,7 @@ const Routes = [
     },
     {
         path: "/admin",
-        element: <Midlware role="admin"  > <Layout /></Midlware> ,
+        element: <Midlware  role = "ROLE_ADMIN"   > <Layout /></Midlware> ,
         children: [
             {
                 path: "home",
@@ -69,6 +73,24 @@ const Routes = [
             }
             
         ]
+    }
+    ,
+    {
+        path: "/annotator",
+        element: <AnnotatorLayout />,
+        children: [
+            {
+                path: "tasks",
+                element: <AnnotatorTaskList/>
+            }, {
+                path:"task/:task_id",
+                element:<TextCouples/>
+            }
+        ]
+    },
+    {
+        path: "/login",
+        element: <SignInSection/>
     }
 ]
 

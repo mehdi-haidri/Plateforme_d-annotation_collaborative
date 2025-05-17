@@ -36,17 +36,16 @@ public class SecurityConfig {
 
         return http.csrf(customizer -> customizer.disable()).cors(Customizer.withDefaults()).
                 authorizeHttpRequests(request -> request
-                        .requestMatchers("app/v1/users/login" ,"app/v1/users/register").permitAll()
-                        .anyRequest().authenticated()).
-                httpBasic(Customizer.withDefaults()).
-                sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                        .requestMatchers("/app/v1/users/login" ,"/app/v1/users/register" , "/h2-console/**").permitAll()
+                        .anyRequest().authenticated())
+                .headers(headers -> headers
+                .frameOptions(frameOptions -> frameOptions.sameOrigin())) // ✅ Allow frames from same origin (for H2 console)).
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
 
 
     }
-
-
     @Bean
     public AuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
@@ -57,7 +56,7 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.addAllowedOrigin("http://localhost:5173");  // Allow your frontend origin
+        configuration.addAllowedOrigin("*");  // Allow your frontend origin
         configuration.addAllowedMethod("*");
         configuration.addAllowedHeader("*");
         configuration.setAllowCredentials(true);  // If you are using credentials

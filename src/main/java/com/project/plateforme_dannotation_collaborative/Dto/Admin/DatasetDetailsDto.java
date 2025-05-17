@@ -1,10 +1,8 @@
-package com.project.plateforme_dannotation_collaborative.Dto;
+package com.project.plateforme_dannotation_collaborative.Dto.Admin;
 
-import com.project.plateforme_dannotation_collaborative.Model.Task;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Date;
 import java.util.List;

@@ -1,0 +1,2 @@
+package com.project.plateforme_dannotation_collaborative.Exception;public class CustomhandleMethodArgumentNotValidException {
+}

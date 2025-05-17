@@ -1,9 +1,9 @@
 package com.project.plateforme_dannotation_collaborative.Service;
 
-import com.project.plateforme_dannotation_collaborative.Dto.DataSetDto;
-import com.project.plateforme_dannotation_collaborative.Dto.DatasetDetailsDto;
-import com.project.plateforme_dannotation_collaborative.Dto.DatasetMinResposeDto;
-import com.project.plateforme_dannotation_collaborative.Dto.TaskDto;
+import com.project.plateforme_dannotation_collaborative.Dto.Admin.DataSetDto;
+import com.project.plateforme_dannotation_collaborative.Dto.Admin.DatasetDetailsDto;
+import com.project.plateforme_dannotation_collaborative.Dto.Admin.DatasetMinResposeDto;
+import com.project.plateforme_dannotation_collaborative.Dto.Admin.TaskDto;
 import com.project.plateforme_dannotation_collaborative.Model.*;
 import com.project.plateforme_dannotation_collaborative.Repository.DataSetRepository;
 import lombok.RequiredArgsConstructor;

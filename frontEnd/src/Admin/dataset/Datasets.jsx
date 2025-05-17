@@ -1,7 +1,8 @@
 import React, { useEffect } from 'react'
 import Table from '../components/Table'
 import { Link } from 'react-router-dom';
-
+import roles from '../../config/roles';
+const   API_URL = import.meta.env.VITE_API_URL;
 function Datasets() {
 
     const [rows, setRows] = React.useState([]);
@@ -43,7 +44,7 @@ function Datasets() {
     
     const fetchData = async () => {
         try {
-          let response = await fetch('http://localhost:8080/app/v1/datasets/datasets', {
+          let response = await fetch(API_URL+'datasets/datasets', {
             method: "GET",
             headers: {
               "Content-Type": "application/json",
@@ -87,7 +88,7 @@ function Datasets() {
       
       <div>
         <button type="button" className="text-white  bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">
-          <Link to="/datasets/addDataset" >Add + </Link></button>
+          <Link to={`${roles.ROLE_ADMIN}/datasets/addDataset`} >Add + </Link></button>
       </div>
           <Table rows={rows}  colums={colums}/>
       </div>

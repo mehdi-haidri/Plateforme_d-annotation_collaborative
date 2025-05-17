@@ -1,24 +1,22 @@
 import { useState, useRef, useEffect } from "react";
 import { useNavigate, useOutletContext } from "react-router-dom";
 import { DayPicker } from "react-day-picker";
-
+import roles from "../../config/roles";
 export default function DatasetForm() {
   const [date, setDate] = useState(new Date());
   const Navigate = useNavigate();
   const { setAlert } = useOutletContext();
   const [file, setFile] = useState();
   const requestError = useRef({});
-  const [annotators, setAnnotators] = useState([
-    { id: 1, name: "test" },
-    { id: 2, name: "test2" },
-    { id: 3, name: "test3" },
-  ]);
+  const [annotators, setAnnotators] = useState([ ]);
   const [selectedAnnotators, setSelectedAnnotators] = useState([]);
   const inputRef = useRef(null);
   const [classes, setClasses] = useState("");
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [validation, setValidation] = useState({});
+  const [isLoading, setIsLoading] = useState(false);
+  const API_URL = import.meta.env.VITE_API_URL;
  
   useEffect(() => {
     fetchAnnotators();
@@ -27,7 +25,13 @@ export default function DatasetForm() {
   const fetchAnnotators = async () => {
     try {
       let response = await fetch(
-        "http://localhost:8080/app/v1/users/annotators/true"
+        API_URL + "users/annotators/true", {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        }
+      }
       );
       if (!response.ok) {
         throw new Error("Network response was not ok");
@@ -53,8 +57,11 @@ export default function DatasetForm() {
     formData.append("datelimit", date?.toISOString().split('T')[0]);
 
     try {
-      let response = await fetch('http://localhost:8080/app/v1/datasets/addDataset', {
-      method: "POST",
+      let response = await fetch(API_URL + 'datasets/addDataset', {
+        method: "POST",
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        },
       body: formData,
       })
       
@@ -65,7 +72,7 @@ export default function DatasetForm() {
       response = await response.json();
       console.log(response);
       setAlert({ type: "success", message: "Dataset created successfully" });
-      Navigate(`/datasets`);
+      Navigate(roles.ROLE_ADMIN+'/datasets');
      
     } catch (error) {
       if (requestError.satus == 500) {
@@ -182,9 +189,10 @@ export default function DatasetForm() {
         <button
           onClick={handleSubmit}
           type="submit"
-          className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
-        >
-          Save
+          className="text-white min-h-[42px]  bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+          >
+            
+                  {isLoading ? <span className="loading loading-dots loading-md"></span>: "Save"}
         </button>
       </form>
 
@@ -234,7 +242,7 @@ export default function DatasetForm() {
                     </div>
                   </>}
             </div>
-            <div className="dropdown dropdown-down">
+            <div className="dropdown dropdown-end">
               <div tabIndex={0} role="button" className="btn m-1">
                 Add annotator
               </div>

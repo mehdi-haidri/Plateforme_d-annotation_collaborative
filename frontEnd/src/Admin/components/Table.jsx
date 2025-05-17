@@ -1,5 +1,6 @@
 
-import {  Link } from 'react-router-dom';
+import { Link } from 'react-router-dom';
+import roles from '../../config/roles';
 
 const Table = ( {colums , rows}) => {
   return (
@@ -35,12 +36,12 @@ const Table = ( {colums , rows}) => {
                 }
               })}
                         <td className="px-6 py-2 ">
-                         <Link to={`/datasets/add-annotators/${row.id}`} className="font-medium text-blue-600 dark:text-blue-500 hover:underline">
+                         <Link to={`${roles.ROLE_ADMIN}/datasets/add-annotators/${row.id}`} className="font-medium text-blue-600 dark:text-blue-500 hover:underline">
                           { row.status ? 'annotated' : <button  className="btn btn-soft btn-warning">Add annotators</button> }
                          </Link>
                        </td>
               <td className="px-6 py-4">
-                <Link to={`/datasets/${row.id}`}>
+                <Link to={`${roles.ROLE_ADMIN}/datasets/${row.id}`}>
                   <button className="btn btn-soft btn-info">details</button>
                 </Link>
                        </td>

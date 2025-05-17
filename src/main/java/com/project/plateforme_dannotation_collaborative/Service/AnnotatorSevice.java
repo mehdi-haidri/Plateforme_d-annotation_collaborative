@@ -1,6 +1,6 @@
 package com.project.plateforme_dannotation_collaborative.Service;
 
-import com.project.plateforme_dannotation_collaborative.Dto.AnnotatorsMinResponseDto;
+import com.project.plateforme_dannotation_collaborative.Dto.Admin.AnnotatorsMinResponseDto;
 import com.project.plateforme_dannotation_collaborative.Model.Annotator;
 import com.project.plateforme_dannotation_collaborative.Repository.AnnotatorRepository;
 import lombok.RequiredArgsConstructor;
@@ -36,8 +36,11 @@ public class AnnotatorSevice {
         )).toList();
     }
 
-    public AnnotatorsMinResponseDto  getAnnotatorById(Long id) {
+    public AnnotatorsMinResponseDto  getAnnotatorDtoById(Long id) {
         Annotator annotator = annotatorRepository.findById(id).orElse(new Annotator());
         return new AnnotatorsMinResponseDto(annotator.getId(), annotator.getLastName(), annotator.getFirstName(), annotator.getState());
+    }
+    public Annotator  getAnnotatorById(Long id) {
+        return annotatorRepository.findById(id).orElse(new Annotator());
     }
 }

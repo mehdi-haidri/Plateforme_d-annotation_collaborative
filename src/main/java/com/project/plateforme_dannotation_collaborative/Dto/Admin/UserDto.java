@@ -1,4 +1,4 @@
-package com.project.plateforme_dannotation_collaborative.Dto;
+package com.project.plateforme_dannotation_collaborative.Dto.Admin;
 
 
 import jakarta.validation.constraints.Email;

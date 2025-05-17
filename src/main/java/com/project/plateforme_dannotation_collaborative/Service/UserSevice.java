@@ -2,9 +2,11 @@ package com.project.plateforme_dannotation_collaborative.Service;
 
 
 import com.project.plateforme_dannotation_collaborative.Controller.Response;
-import com.project.plateforme_dannotation_collaborative.Dto.UserDto;
+import com.project.plateforme_dannotation_collaborative.Dto.Admin.UserDto;
 import com.project.plateforme_dannotation_collaborative.Dto.UserLoginDto;
+import com.project.plateforme_dannotation_collaborative.Jwt.Model.UserPrincipal;
 import com.project.plateforme_dannotation_collaborative.Jwt.Service.JWTService;
+import com.project.plateforme_dannotation_collaborative.Jwt.Service.MyUserDetailsService;
 import com.project.plateforme_dannotation_collaborative.Model.Admin;
 import com.project.plateforme_dannotation_collaborative.Model.Annotator;
 import com.project.plateforme_dannotation_collaborative.Model.Role;
@@ -13,14 +15,13 @@ import com.project.plateforme_dannotation_collaborative.Repository.AnnotatorRepo
 import com.project.plateforme_dannotation_collaborative.Repository.RoleRepository;
 import com.project.plateforme_dannotation_collaborative.Repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -84,10 +85,13 @@ public class UserSevice {
         Authentication authentication = authManager.authenticate(new UsernamePasswordAuthenticationToken(user.getUserName(), user.getPassword()));
             Response response = new Response();
         if (authentication.isAuthenticated()) {
-            String role = userRepository.findByEmail(user.getUserName()).getRole().getName();
+
+            UserPrincipal userDetails = (UserPrincipal) authentication.getPrincipal();
+
+            String role = userDetails.getUser().getRole().getName();
             List <String> roles = List.of(role);
 
-            String token = jwtService.generateToken(user.getUserName() , roles);
+            String token = jwtService.generateToken(user.getUserName() , roles , userDetails.getUser().getId());
             response.setError(false);
             response.getData().put("token",token);
             response.getData().put("role", role);

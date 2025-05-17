@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
+const API_URL = import.meta.env.VITE_API_URL;
 
 const DatasetDetails = () => {
   const { id } = useParams();
@@ -46,7 +47,15 @@ const DatasetDetails = () => {
 
   const fetchDatasets = async () => {
     try {
-      let response = await fetch("http://localhost:8080/app/v1/datasets/" + id);
+      let response = await fetch(API_URL + "datasets/" + id, 
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            'Authorization': `Bearer ${localStorage.getItem('token')}`
+          },
+        }
+      );
       if (!response.ok) {
         throw new Error("Network response was not ok");
       }

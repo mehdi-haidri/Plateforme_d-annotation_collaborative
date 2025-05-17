@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
-import { id } from "react-day-picker/locale";
 import { useNavigate, useOutletContext, useParams } from "react-router-dom";
+
+const API_URL = import.meta.env.VITE_API_URL;
 
 function UpdateAnnotator() {
   const Navigate = useNavigate();
@@ -10,6 +11,7 @@ function UpdateAnnotator() {
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleSubmit = async () => {
     try {
@@ -40,9 +42,15 @@ function UpdateAnnotator() {
   };
 
   const getAnnotator = async () => {
+    setIsLoading(true);
     try {
       let response = await fetch(
-        "http://localhost:8080/app/v1/users/annotators/annotator/" + id
+        API_URL + "users/annotators/annotator/" + id, {
+          method: "GET",
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('token')}`
+          },
+        }
       );
       if (!response.ok) {
         throw new Error("Network response was not ok");
@@ -57,6 +65,7 @@ function UpdateAnnotator() {
       setAlert({ type: "error", message: "Annotators not found" });
       console.error(error);
     }
+    setIsLoading(false);
   };
 
     useEffect(() => {
@@ -147,9 +156,9 @@ function UpdateAnnotator() {
         <button
           onClick={handleSubmit}
           type="submit"
-          className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+          className="text-white  min-h-[42px] bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
         >
-          Save
+        {isLoading ? <span className="loading loading-dots loading-md "></span>: "Save"}
         </button>
       </form>
     </>

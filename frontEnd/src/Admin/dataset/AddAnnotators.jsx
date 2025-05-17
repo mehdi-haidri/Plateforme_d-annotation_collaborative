@@ -3,13 +3,16 @@ import { useNavigate, useOutletContext, useParams } from "react-router-dom";
 import { DayPicker } from "react-day-picker";
 import { se } from "react-day-picker/locale";
 
+const API_URL = import.meta.env.VITE_API_URL;
+
 const AddAnnotators = () => {
   const { setAlert } = useOutletContext();
   const { id } = useParams();
   const Navigate = useNavigate();
   const [selectedAnnotators, setSelectedAnnotators] = useState([]);
     const [rows, setRows] = useState([]);
-    const [date, setDate] = useState()
+  const [date, setDate] = useState()
+  const [isLoading , setIsLoading] = useState(false);
    
   const colums = [
     {
@@ -36,7 +39,13 @@ const AddAnnotators = () => {
   const fetchAnnotators = async () => {
     try {
       let response = await fetch(
-        "http://localhost:8080/app/v1/users/annotators/true"
+        API_URL+"users/annotators/true", {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            'Authorization': `Bearer ${localStorage.getItem('token')}`
+          }
+        }
       );
       if (!response.ok) {
         throw new Error("Network response was not ok");
@@ -64,17 +73,20 @@ const AddAnnotators = () => {
     console.log(id);
   }, []);
     
-    const handleSubmit = async () => {
+  const handleSubmit = async () => {
+        setIsLoading(true);
         
         try {
-            let response = await fetch('http://localhost:8080/app/v1/datasets/addAnnotators', {
+            let response = await fetch(API_URL+'datasets/addAnnotators', {
                 method: "POST",
                 headers: {
-                    "Content-Type": "application/json",
+                  "Content-Type": "application/json",
+                  'Authorization': `Bearer ${localStorage.getItem('token')}`
                 },
                 body: JSON.stringify({ datasetId: id, annotators: selectedAnnotators, datelimit: date.toISOString().split('T')[0]}),
             })
-            if (!response.ok) {
+          if (!response.ok) {
+              console.log(response);
               throw new Error('Network response was not ok');
               }
               response = await response.json();
@@ -84,7 +96,7 @@ const AddAnnotators = () => {
           } catch (error) {
             console.error(error);
           }
-        
+        setIsLoading(false);
     }
 
   return (
@@ -172,7 +184,8 @@ const AddAnnotators = () => {
         onClick={() => handleSubmit()}
         className="text-white my-4 bg-blue-700 hover:bg-blue-800   font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
       >
-        Save
+                          {isLoading ? <span className="loading loading-dots loading-md"></span>: "Save"}
+
       </button>
     </>
   );
