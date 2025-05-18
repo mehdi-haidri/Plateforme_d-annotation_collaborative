@@ -1,6 +1,6 @@
 import { useRef, useState } from "react";
 import { useNavigate, useOutletContext } from "react-router-dom";
-import roles from "../../config/roles";
+
 const API_URL = import.meta.env.VITE_API_URL;
 
 function AddAnnotator() {

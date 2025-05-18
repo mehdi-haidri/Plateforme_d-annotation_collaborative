@@ -1,14 +1,17 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-
+import { useContext } from "react";
+import { AlertContext } from "./App";
 
 const API_URL = import.meta.env.VITE_API_URL;
 function Midlware({ children: next, role }) {
-    const navigate = useNavigate();
-  const isTokenExpired = async () => {
-      console.log(localStorage.getItem('token'));
+  const navigate = useNavigate();
+  const {setAlert} = useContext(AlertContext);
+  const isTokenValide = async () => {
+    console.log(localStorage.getItem('token'));
+    let response
     try {
-        const response = await fetch(`${API_URL}users/isAuth`, {
+         response = await fetch(`${API_URL}users/isAuth`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -16,28 +19,36 @@ function Midlware({ children: next, role }) {
             },
         }
         );
-      if (response.ok) {
-        const data = await response.json();
-        console.log(data);
-        return data?.data.isAuth === "false";
-      } else {
-        return true;
-      }
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      } 
+      return false;
     } catch (error) {
-      console.log(error);
-      return true;
+      console.log(response);
+      if (response?.status === 401) {
+        response = await response.json();
+        console.log(response?.data?.error);
+        setAlert({ type: "error", message: "Uanthorized" });
+        localStorage.removeItem('token');
+        localStorage.removeItem('role');
+        return true
+      }
+      
+        setAlert({ type: "error", message: "server Error" });
+        
     }
     };
 
   useEffect(() => {
     console.log(role);
     const checkAuth = async () => {
-      if (localStorage.getItem("token") === null || await isTokenExpired() || role !== localStorage.getItem("role")) {
+      if (localStorage.getItem("token") === null || await isTokenValide() || role !== localStorage.getItem("role")) {
         navigate("/login");
       }
     };
     checkAuth();
   }, [navigate]);
+
 
  return (
     <>

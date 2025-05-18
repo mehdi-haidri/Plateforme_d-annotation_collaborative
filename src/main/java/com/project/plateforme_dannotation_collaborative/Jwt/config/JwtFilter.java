@@ -2,6 +2,8 @@ package com.project.plateforme_dannotation_collaborative.Jwt.config;
 
 
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.project.plateforme_dannotation_collaborative.Exception.CustomeJwtValidityException;
 import com.project.plateforme_dannotation_collaborative.Jwt.Service.JWTService;
 import com.project.plateforme_dannotation_collaborative.Jwt.Service.MyUserDetailsService;
 import io.jsonwebtoken.Claims;
@@ -22,6 +24,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Component
@@ -34,9 +37,9 @@ public class JwtFilter extends OncePerRequestFilter {
     ApplicationContext context;
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws CustomeJwtValidityException, IOException {
 
-
+   try{
         String authHeader = request.getHeader("Authorization");
         String token = null;
         String username = null;
@@ -65,6 +68,30 @@ public class JwtFilter extends OncePerRequestFilter {
             }
         }
 
-        filterChain.doFilter(request, response);
+         filterChain.doFilter(request, response);
+         }catch (io.jsonwebtoken.security.SignatureException | io.jsonwebtoken.MalformedJwtException ex) {
+       response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+       response.setContentType("application/json");
+
+       // Build your JSON response manually
+       String json = new ObjectMapper().writeValueAsString(Map.of(
+               "error", true,
+               "data", Map.of(
+                       "errorType", "auth",
+                       "error", ex.getMessage()
+               )
+       ));
+
+       response.getWriter().write(json);
+       } catch (Exception ex) {
+           response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+       String json = new ObjectMapper().writeValueAsString(Map.of(
+               "error", true,
+               "data", Map.of(
+                       "errorType", "auth",
+                       "error", ex.getMessage()
+               )
+       ));
+       }
     }
 }

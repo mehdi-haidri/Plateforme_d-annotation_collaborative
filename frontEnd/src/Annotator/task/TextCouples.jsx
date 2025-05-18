@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from 'react'
-import { useParams } from 'react-router-dom';
+import  { useEffect, useState } from 'react'
+import { useOutletContext, useParams } from 'react-router-dom';
 const API_URL = import.meta.env.VITE_API_URL;
 import TextAnnotationCard from '../Components/TextAnnotationCard';
+
 
 function TextCouples() {
     const {task_id} = useParams();
@@ -10,7 +11,8 @@ function TextCouples() {
     const [totalPages, setTotalPages] = useState(0);
     const [annotated, setAnnotated] = useState(false);
     const [currentClasse, setCurrentClasse] = useState('');
-    const [currentIndex , setCurrentIndex] = useState(0);
+    const [currentIndex, setCurrentIndex] = useState(0);
+    const { setAlert } = useOutletContext();
     const fetchLatestTextCouple = async () => {
         try {
             let response = await fetch(
@@ -24,6 +26,7 @@ function TextCouples() {
             if (!response.ok) {
                 throw new Error("Network response was not ok");
             }
+            console.log(response);
             let data = await response.json();
             setTextCouple(data.data?.textCouple);
             setClasses(data.data?.classes);
@@ -35,6 +38,7 @@ function TextCouples() {
             }
             console.log(data);
         } catch (error) {
+            setAlert({ type: "error", message: "server Error" });
             console.error(error);
         }
     }
@@ -48,5 +52,7 @@ function TextCouples() {
     </div>
   )
 }
+
+
 
 export default TextCouples

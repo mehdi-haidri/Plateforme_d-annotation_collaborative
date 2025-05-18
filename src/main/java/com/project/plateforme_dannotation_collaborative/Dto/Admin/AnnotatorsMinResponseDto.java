@@ -12,4 +12,5 @@ public class AnnotatorsMinResponseDto {
     String lastName;
     String firstName;
     Boolean state ;
+    String email;
 }

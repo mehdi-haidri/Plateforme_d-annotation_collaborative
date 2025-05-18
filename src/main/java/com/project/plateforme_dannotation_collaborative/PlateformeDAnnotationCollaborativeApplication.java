@@ -58,6 +58,7 @@ public class PlateformeDAnnotationCollaborativeApplication implements CommandLin
         Annotator annotator3 = new Annotator();
         annotator3.setForAnnotator("333333333");
         annotator3.setFirstName("333333333");
+        annotator3.setEmail("333333333@dddd.com");
         annotator3.setState(true);
         annotator3.setRole(role2);
         userRepository.save( annotator3);

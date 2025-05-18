@@ -35,7 +35,7 @@ function Datasets() {
         {
             field: 'action',
             width: 90,
-        },
+        }
     
     ]
 

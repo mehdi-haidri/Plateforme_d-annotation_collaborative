@@ -63,7 +63,7 @@ const Annotators = () => {
       setRows(response?.data?.tasks)
        
     } catch (error) {
-      setAlert({ type: "error", message: "Annotators not found" });
+      setAlert({ type: "error", message: "server Error" });
       console.error(error);
     }
   };

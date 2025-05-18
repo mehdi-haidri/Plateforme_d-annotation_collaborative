@@ -13,9 +13,7 @@ import org.apache.commons.csv.CSVRecord;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.util.ArrayList;
 
 import java.util.Collections;
@@ -30,6 +28,7 @@ public class DataSetService {
     private final UserSevice userSevice;
     private final TextCoupleService textCoupleService;
     private  final TaskService taskService;
+    private  final  FileStorageService fileStorageService;
 
     public Dataset saveDateSet(DataSetDto dataSetDto) throws IOException {
 
@@ -138,5 +137,46 @@ public class DataSetService {
                                , dataset.getAnnotated()
                                , dataset.getSize() , dataset.getClasses().size()))
                .toList();
+    }
+
+    private String escapeCsv(String value) {
+        if (value.contains(",") || value.contains("\"") || value.contains("\n")) {
+            value = value.replace("\"", "\"\"");
+            return "\"" + value + "\"";
+        }
+        return value;
+    }
+
+    public File GetAnnotattedDatasetFile(Long id) {
+        try {
+            Dataset dataset = dataSetRepository.findById(id).orElseThrow(() -> new RuntimeException("Dataset not found"));
+
+            String filename = dataset.getName() + dataset.getId() + ".csv";
+
+            File datasetFile = new File("uploads/" + filename);
+
+            if (datasetFile.createNewFile()) {
+                System.out.println("File created: " + datasetFile.getAbsolutePath());
+                List< TextCouple> textCouples =  dataset.getTextCouples();
+                System.out.println(textCouples.size());
+                try (FileWriter writer = new FileWriter(datasetFile, true)) {
+                    writer.write("id,text1,text2,label\n");  // Add newline here
+                    int i = 1;
+                    for (TextCouple textCouple : textCouples) {
+                        writer.write(i + "," + escapeCsv(textCouple.getText1()) + "," + escapeCsv(textCouple.getText2()) + "," + textCouple.getAnnotation().getClasse() + "\n");
+                        i++;
+                    }
+                }
+            } else {
+                System.out.println("File already exists: " + datasetFile.getAbsolutePath());
+                datasetFile = fileStorageService.getFile(filename);
+            }
+
+            return datasetFile;
+
+        }catch ( IOException e){
+            throw new RuntimeException(e);
+        }
+
     }
 }

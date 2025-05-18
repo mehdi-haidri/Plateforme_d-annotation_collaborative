@@ -18,6 +18,7 @@ public abstract class User {
     Long id;
     String lastName;
     String firstName;
+    @Column(unique = true , nullable = false)
     String email;
     String password;
     @ManyToOne

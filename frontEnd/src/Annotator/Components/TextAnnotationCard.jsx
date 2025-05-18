@@ -1,7 +1,7 @@
 import {  useEffect, useState } from 'react';
-import { se } from 'react-day-picker/locale';
 
-import { useParams } from 'react-router-dom';
+
+import { useOutletContext, useParams } from 'react-router-dom';
 
 const API_URL = import.meta.env.VITE_API_URL;
 const TextAnnotationCard = ({ data ,classes , totalPages , currentClasse , isAnnotated , index }) => {
@@ -9,6 +9,7 @@ const TextAnnotationCard = ({ data ,classes , totalPages , currentClasse , isAnn
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const [currentCouple, setCurrentCouple] = useState(data);
+    const { setAlert } = useOutletContext();
   const [maxIndex, setMaxIndex] = useState(0);
   const [classe , setClasse] = useState('');
 useEffect(() => {
@@ -50,10 +51,10 @@ useEffect(() => {
       
   }
     const handleNext = async() => {
-        setIsLoading(true);
-        await fetchTextCouple(currentIndex + 1);
-      setCurrentIndex((prev) => prev + 1);
-      setIsLoading(false);
+      setIsLoading(true);
+       await fetchTextCouple(currentIndex + 1);
+       setCurrentIndex((prev) => prev + 1);
+       setIsLoading(false);
        
   };
 
@@ -65,7 +66,7 @@ useEffect(() => {
   };
 
   const handleSave = async () => {
-    setIsLoading(true);
+      setIsLoading(true);
       console.log(classe);
       console.log(currentCouple);
       if( classe === ''  || currentCouple.id === undefined) {
@@ -91,8 +92,10 @@ useEffect(() => {
           throw new Error("Network response was not ok");
         }
         response = await response.json();
-       console.log(response);
+        console.log(response);
+       totalPages !== currentIndex + 1 && handleNext();
     } catch (error) {
+          setAlert({ type: "error", message: "server Error" });
           console.error(error);
     }
     setIsLoading(false);
@@ -153,7 +156,7 @@ useEffect(() => {
         <span className="font-semibold text-gray-900 dark:text-white">{totalPages}</span> Entries
       </span>
       {/* Buttons */}
-      <div className="inline-flex mt-2 xs:mt-0">
+      <div className="inline-flex mt-2 gap-2 xs:mt-0">
         <button
           onClick={handlePrevious}
             disabled={currentIndex === 0}
@@ -173,7 +176,7 @@ useEffect(() => {
           </button>
         <button
             onClick={handleNext}
-            disabled={currentIndex == maxIndex}
+            hidden={currentIndex == maxIndex}
           className="flex items-center justify-center px-4 h-10 text-base font-medium text-white bg-gray-800 rounded-e hover:bg-gray-900 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
         >
               Next 

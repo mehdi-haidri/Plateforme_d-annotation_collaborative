@@ -1,6 +1,7 @@
 package com.project.plateforme_dannotation_collaborative.Model;
 
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -17,7 +18,8 @@ public class Annotation {
 
     private String classe;
 
-    @ManyToOne
+    @OneToOne
+    @JsonBackReference
     private  TextCouple textCouple;
 
     @ManyToOne

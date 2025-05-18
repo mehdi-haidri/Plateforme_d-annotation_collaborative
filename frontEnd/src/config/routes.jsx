@@ -14,8 +14,8 @@ import SignInSection from "../Login/SignInSection";
 import AnnotatorLayout from "../Annotator/Layout"
 import Midlware from "../Midlware";
 import AnnotatorTaskList from "../Annotator/task/Tasks";
-import roles from "./roles";
 import TextCouples from "../Annotator/task/TextCouples";
+
 
 const Routes = [
     {
@@ -77,7 +77,7 @@ const Routes = [
     ,
     {
         path: "/annotator",
-        element: <AnnotatorLayout />,
+        element: <Midlware role = "ROLE_ANNOTATOR"><AnnotatorLayout /> </Midlware>,
         children: [
             {
                 path: "tasks",
@@ -95,7 +95,7 @@ const Routes = [
 ]
 
 function AppRoutes() {
-
+    
     const Route = useRoutes(Routes);
     return Route;
 }

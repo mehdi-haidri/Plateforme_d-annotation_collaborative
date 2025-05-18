@@ -21,7 +21,8 @@ public class AnnotatorSevice {
                 a.getId() ,
                 a.getLastName(),
                 a.getFirstName(),
-                a.getState()
+                a.getState(),
+                a.getEmail()
         )).toList();
     }
 
@@ -32,15 +33,25 @@ public class AnnotatorSevice {
                 a.getId() ,
                 a.getLastName(),
                 a.getFirstName(),
-                a.getState()
+                a.getState(),
+                a.getEmail()
         )).toList();
     }
 
     public AnnotatorsMinResponseDto  getAnnotatorDtoById(Long id) {
         Annotator annotator = annotatorRepository.findById(id).orElse(new Annotator());
-        return new AnnotatorsMinResponseDto(annotator.getId(), annotator.getLastName(), annotator.getFirstName(), annotator.getState());
+        return new AnnotatorsMinResponseDto(
+                annotator.getId(),
+                annotator.getLastName(),
+                annotator.getFirstName(),
+                annotator.getState(),
+                annotator.getEmail());
     }
     public Annotator  getAnnotatorById(Long id) {
         return annotatorRepository.findById(id).orElse(new Annotator());
+    }
+
+    public void save(Annotator annotator) {
+        annotatorRepository.save(annotator);
     }
 }

@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useOutletContext, useParams } from "react-router-dom";
+import roles from "../../config/roles";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -15,9 +16,10 @@ function UpdateAnnotator() {
 
   const handleSubmit = async () => {
     try {
-      let response = await fetch("http://localhost:8080/app/v1/users/addUser", {
+      let response = await fetch(`${API_URL}users/annotator/update`, {
         method: "POST",
         headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`,
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
@@ -26,7 +28,6 @@ function UpdateAnnotator() {
           lastName,
           email,
           password,
-          role: "ROLE_ANNOTATOR",
         }),
       });
       if (!response.ok) {
@@ -35,7 +36,7 @@ function UpdateAnnotator() {
       response = await response.json();
       console.log(response);
       setAlert({ type: "success", message: "Annotator created successfully" });
-      Navigate(`/annotators`);
+      Navigate(`${roles.ROLE_ADMIN}/annotators`);
     } catch (error) {
       console.error(error);
     }
@@ -139,6 +140,7 @@ function UpdateAnnotator() {
         <div className="mb-5">
           <label
             htmlFor="password"
+           
             className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
           >
             Password
@@ -149,7 +151,7 @@ function UpdateAnnotator() {
             type="password"
             placeholder="Password"
             id="password"
-            required
+  
             className="shadow-xs bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 dark:shadow-xs-light"
           />
         </div>

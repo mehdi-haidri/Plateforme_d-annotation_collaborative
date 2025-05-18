@@ -1,11 +1,10 @@
 import { useEffect, useState } from "react";
-import { Link, useNavigate, useOutletContext } from "react-router-dom";
+import { Link,  useOutletContext } from "react-router-dom";
 const API_URL = import.meta.env.VITE_API_URL;
 import roles from "../../config/roles";
 
 const Annotators = () => {
     const { setAlert } = useOutletContext();
-    const [selectedAnnotators, setSelectedAnnotators] = useState([]);
     const [rows, setRows] = useState([]);
    
   const colums = [
@@ -46,13 +45,14 @@ const Annotators = () => {
         throw new Error("Network response was not ok");
       }
       response = await response.json();
+      console.log(response);
       setRows(
         response.data?.annotators.map((annotator) => {
           return {
             id: annotator.id,
             firstName: annotator.firstName,
             lastName: annotator.lastName,
-            status: annotator.status,
+            status: annotator.state,
           };
         })
       );
@@ -62,8 +62,33 @@ const Annotators = () => {
     }
   };
 
+  const togleActive = async(id)=>{
+    try {
+      let response = await fetch(
+        API_URL + "users/annotators/toggleActivation/"+id,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            'Authorization': `Bearer ${localStorage.getItem('token')}`
+          }
+         
+        }
+      );
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+      response = await response.json();
+      console.log(response);
+      fetchAnnotators();
+    } catch (error) {
+      setAlert({ type: "error", message: "Annotators not found" });
+      console.error(error);
+    }
+  }
+
     useEffect(() => {
-      
+
     fetchAnnotators();
    
   }, []);
@@ -77,7 +102,7 @@ const Annotators = () => {
           </div>
           <div>
              
-        <button type="button" className="text-white  bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">
+        <button type="button" className="text-white  bg-blue-700 hover:bg-blue-800  font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 ">
           <Link to={`${roles.ROLE_ADMIN}/annotators/addAnnotator`}>Add + </Link></button>
       </div>
       <div className="relative overflow-x-auto shadow-md sm:rounded-lg">
@@ -118,18 +143,25 @@ const Annotators = () => {
                     href="#"
                     className="font-medium text-blue-600 dark:text-blue-500 hover:underline"
                   >
-                    {row.status ? (
-                      "inactive"
-                    ) : (
-                      <button className="btn btn-soft btn-success">
-                        ACTIVE
-                      </button>
+                    {!row.status ? (
+                      <div className="text-red-300 ">
+                      <div className="inline-grid *:[grid-area:1/1] me-2">
+                        <div className="status status-error animate-ping"></div>
+                        <div className="status status-error"></div>
+                      </div>Inactive</div>
+                    ) : (<div className="text-green-300 ">
+                      <div className="inline-grid *:[grid-area:1/1] me-2">
+                        <div className="status status-success animate-ping"></div>
+                        <div className="status status-success"></div>
+                      </div>Active</div>
                     )}
                   </a>
                 </td>
-                    <td className="px-6 py-4 flex gap-2">
+                  <td className="px-6 py-4 flex gap-2">
                   <Link to={`${roles.ROLE_ADMIN}/annotators/updateAnnotator/${row.id}`}><button className="btn btn-soft btn-info">Modify</button></Link>
-                  <button className="btn btn-soft btn-error">Delete</button>
+                  {row.status ? <button onClick={() => {togleActive(row.id)}} className="btn btn-soft btn-error">Deactivate</button>:
+                    <button onClick={() => {togleActive(row.id)}} className="btn btn-soft btn-success">Acticate</button>
+                  }
                 </td>
               </tr>
             ))}

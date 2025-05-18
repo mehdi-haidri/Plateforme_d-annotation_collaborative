@@ -1,12 +1,12 @@
 
-import React, { useState } from 'react';
+import  { useState } from 'react';
 const API_URL = import.meta.env.VITE_API_URL;
 import { useNavigate } from "react-router-dom";
 import roles from '../config/roles';
 
 const SignInSection = () => {
 const [userName, setUserName] = useState('');
-    const [password, setPassword] = useState('');
+    const [password, setPassword] = useState('1234567');
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
 

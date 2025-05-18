@@ -8,11 +8,18 @@ import com.project.plateforme_dannotation_collaborative.Model.Dataset;
 import com.project.plateforme_dannotation_collaborative.Service.DataSetService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.util.List;
 
 
@@ -20,7 +27,6 @@ import java.util.List;
 @RestController
 @RequestMapping("/app/v1/datasets")
 @RequiredArgsConstructor
-@CrossOrigin(originPatterns = "*")
 public class DataSetController {
 
     private final DataSetService dataSetService;
@@ -72,8 +78,8 @@ public class DataSetController {
            return new ResponseEntity<>(response , HttpStatus.OK);
         }catch (Exception e){
             response.setError(true);
-            response.getData().put("error", e.getMessage());
-            return new ResponseEntity<>(response , HttpStatus.INTERNAL_SERVER_ERROR);
+            response.getData().put("error", "dataset cannot be annotated");
+            return new ResponseEntity<>(response , HttpStatus.BAD_REQUEST);
         }
 
     }
@@ -99,5 +105,20 @@ public class DataSetController {
         DatasetDetailsDto dataset = dataSetService.getDatasetDetails(id);
         response.getData().put("dataset" , dataset);
         return new ResponseEntity<>(response , HttpStatus.OK);
+    }
+
+
+    @GetMapping("/download/{id}")
+    public ResponseEntity <?> DownloadDataset(@PathVariable Long id) throws FileNotFoundException {
+        Response response = new Response();
+        response.setError(false);
+        File file  = dataSetService.GetAnnotattedDatasetFile(id);
+        InputStreamResource resource = new InputStreamResource(new FileInputStream(file));
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment;filename=" + file.getName())
+                .contentType(MediaType.parseMediaType("text/csv"))
+                .contentLength(file.length())
+                .body(resource);
     }
 }

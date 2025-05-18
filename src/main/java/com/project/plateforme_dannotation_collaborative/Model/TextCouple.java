@@ -1,6 +1,7 @@
 package com.project.plateforme_dannotation_collaborative.Model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -23,4 +24,8 @@ public class TextCouple {
     @ManyToOne
             @JsonBackReference
     Task task ;
-}
+
+    @OneToOne(mappedBy = "textCouple")
+            @JsonManagedReference
+    Annotation annotation;
+    }

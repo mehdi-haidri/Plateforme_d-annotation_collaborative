@@ -3,3 +3,5 @@ spring:
     name: Plateforme_d-annotation_collaborative
   datasource:
     url: jdbc:h2:mem:DB_TEST
+file:
+  upload-dir: uploads

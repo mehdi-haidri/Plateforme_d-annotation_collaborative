@@ -3,7 +3,9 @@ package com.project.plateforme_dannotation_collaborative.Service;
 
 import com.project.plateforme_dannotation_collaborative.Controller.Response;
 import com.project.plateforme_dannotation_collaborative.Dto.Admin.UserDto;
+import com.project.plateforme_dannotation_collaborative.Dto.Admin.UserUpdateDto;
 import com.project.plateforme_dannotation_collaborative.Dto.UserLoginDto;
+import com.project.plateforme_dannotation_collaborative.Exception.CustomhandleMethodArgumentNotValidException;
 import com.project.plateforme_dannotation_collaborative.Jwt.Model.UserPrincipal;
 import com.project.plateforme_dannotation_collaborative.Jwt.Service.JWTService;
 import com.project.plateforme_dannotation_collaborative.Jwt.Service.MyUserDetailsService;
@@ -22,6 +24,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
 import java.util.List;
 
 @Service
@@ -61,13 +64,17 @@ public class UserSevice {
         }
         return null;
     }
-    public User saveUser(UserDto userDto) throws Exception {
+    public User saveUser(UserDto userDto) throws CustomhandleMethodArgumentNotValidException {
+
+       if( userRepository.findByEmail(userDto.getEmail()).isPresent()){
+           HashMap<String ,String> fieldError = new HashMap<>();
+           fieldError.put("email", "Email already exists");
+           throw new CustomhandleMethodArgumentNotValidException(fieldError);
+       }
         User user = DToToUser(userDto);
         user.setPassword(encoder.encode(user.getPassword()));
-        if(user != null) {
-            return userRepository.save(user);
-        }
-        throw new Exception("eeee");
+
+        return userRepository.save(user);
 
     }
 
@@ -75,9 +82,14 @@ public class UserSevice {
         return  annotatorRepository.findAllById(ids);
     }
 
-    public void updateUser(UserDto user) {
-        User userToUpdate = DToToUser(user);
-        user.setPassword(encoder.encode(user.getPassword()));
+    public void updateUser(UserUpdateDto user) {
+        User userToUpdate =    annotatorRepository.findById(user.getId()).orElse(null);
+        userToUpdate.setFirstName(user.getFirstName());
+        userToUpdate.setLastName(user.getLastName());
+        userToUpdate.setEmail(user.getEmail());
+        if(!user.getPassword().isEmpty()){
+            userToUpdate.setPassword(encoder.encode(user.getPassword()));
+        }
         if(userToUpdate != null) userRepository.save(userToUpdate);
     }
 

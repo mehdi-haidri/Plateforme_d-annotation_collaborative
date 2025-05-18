@@ -50,6 +50,7 @@ public class TextCoupleService {
         response.getData().put("classes", classes);
         response.getData().put("totalPages", totalPages);
         response.getData().put("annotated", false);
+        response.getData().put("index" , index);
         Optional <Annotation> annotationOptional =annotationRepository.findAnnotationByTextCouple(textCouple);
         if(annotationOptional.isPresent()){
             response.getData().put("annotated", true);
@@ -60,16 +61,15 @@ public class TextCoupleService {
 
     public Boolean saveAnnotation(Long annotator_id, SaveTextCoupleDto data) {
         try{
-
-        Annotation annotation = new Annotation();
-        annotation.setAnnotator(annotatorRepository.findById(annotator_id).get());
         TextCouple textCouple = textCoupleRepository.findById(data.getTextCoupleId()).get();
+        Annotation annotation =  annotationRepository.findAnnotationByTextCouple(textCouple).orElse(new Annotation());
+        annotation.setAnnotator(annotatorRepository.findById(annotator_id).get());
         Dataset dataset = textCouple.getDataset();
         Task task = textCouple.getTask();
 
         if(data.getIndex() > task.getCheckpoint() || task.getCheckpoint() == 0 ){
             task.setCheckpoint(data.getIndex());
-            task.setAdvancement((double) (task.getCheckpoint()+1)/ task.getSize());
+            task.setAdvancement(100 *(double) (task.getCheckpoint()+1)/ task.getSize());
             dataset.setAdvancement(dataset.getAdvancement()+1);
         }
         annotation.setTextCouple(textCouple);
