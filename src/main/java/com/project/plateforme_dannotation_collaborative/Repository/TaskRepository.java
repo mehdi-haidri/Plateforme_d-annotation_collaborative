@@ -8,4 +8,7 @@ import java.util.List;
 
 public interface TaskRepository extends JpaRepository<Task, Long> {
     List<Task> findAllByAnnotator(Annotator annotator);
+    long countByAdvancement(Double advancement);
+
+    long countByAdvancementLessThan(double v);
 }

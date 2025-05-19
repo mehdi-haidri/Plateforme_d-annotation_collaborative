@@ -7,6 +7,7 @@ import com.project.plateforme_dannotation_collaborative.Dto.Admin.UserUpdateDto;
 import com.project.plateforme_dannotation_collaborative.Dto.UserLoginDto;
 import com.project.plateforme_dannotation_collaborative.Exception.CustomhandleMethodArgumentNotValidException;
 import com.project.plateforme_dannotation_collaborative.Model.Annotator;
+import com.project.plateforme_dannotation_collaborative.Repository.UserLoginEventRepository;
 import com.project.plateforme_dannotation_collaborative.Service.AnnotatorSevice;
 import com.project.plateforme_dannotation_collaborative.Service.UserSevice;
 import jakarta.validation.Valid;
@@ -78,6 +79,7 @@ public class UserController {
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody UserLoginDto user) {
         Response response = userSevice.verify(user);
+
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 

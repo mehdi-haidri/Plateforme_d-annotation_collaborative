@@ -9,12 +9,10 @@ import com.project.plateforme_dannotation_collaborative.Exception.CustomhandleMe
 import com.project.plateforme_dannotation_collaborative.Jwt.Model.UserPrincipal;
 import com.project.plateforme_dannotation_collaborative.Jwt.Service.JWTService;
 import com.project.plateforme_dannotation_collaborative.Jwt.Service.MyUserDetailsService;
-import com.project.plateforme_dannotation_collaborative.Model.Admin;
-import com.project.plateforme_dannotation_collaborative.Model.Annotator;
-import com.project.plateforme_dannotation_collaborative.Model.Role;
-import com.project.plateforme_dannotation_collaborative.Model.User;
+import com.project.plateforme_dannotation_collaborative.Model.*;
 import com.project.plateforme_dannotation_collaborative.Repository.AnnotatorRepository;
 import com.project.plateforme_dannotation_collaborative.Repository.RoleRepository;
+import com.project.plateforme_dannotation_collaborative.Repository.UserLoginEventRepository;
 import com.project.plateforme_dannotation_collaborative.Repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -24,6 +22,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 
@@ -36,6 +35,7 @@ public class UserSevice {
     private final AnnotatorRepository annotatorRepository;
     private final JWTService jwtService;
     private  final AuthenticationManager authManager;
+    private final  UserLoginEventRepository loginEventRepository;
 
     private BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(12);
     private User DToToUser(UserDto userDto) {
@@ -97,10 +97,13 @@ public class UserSevice {
         Authentication authentication = authManager.authenticate(new UsernamePasswordAuthenticationToken(user.getUserName(), user.getPassword()));
             Response response = new Response();
         if (authentication.isAuthenticated()) {
-
             UserPrincipal userDetails = (UserPrincipal) authentication.getPrincipal();
+            User userDb  = userDetails.getUser() ;
 
-            String role = userDetails.getUser().getRole().getName();
+            recordLogin(userDb.getId());
+            userDb.setOnline(true);
+            userDb = userRepository.save(userDb);
+            String role = userDb.getRole().getName();
             List <String> roles = List.of(role);
 
             String token = jwtService.generateToken(user.getUserName() , roles , userDetails.getUser().getId());
@@ -119,5 +122,12 @@ public class UserSevice {
 
     public boolean checkAuth(String token) {
         return jwtService.isTokenExpired(token);
+    }
+
+    public void recordLogin(Long userId) {
+        UserLoginEvent event = new UserLoginEvent();
+        event.setUserId(userId);
+        event.setLoginTime(LocalDateTime.now());
+        loginEventRepository.save(event);
     }
 }

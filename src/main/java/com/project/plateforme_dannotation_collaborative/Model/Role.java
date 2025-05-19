@@ -15,7 +15,7 @@ public class Role {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
     String name;
-    @OneToMany(mappedBy = "role" , fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "role" )
     @JsonBackReference
     List <User> users;
 }

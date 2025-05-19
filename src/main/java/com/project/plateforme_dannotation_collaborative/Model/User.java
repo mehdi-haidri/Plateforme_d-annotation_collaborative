@@ -25,4 +25,5 @@ public abstract class User {
     @JsonManagedReference
     Role role;
     Boolean state = true ;
+    Boolean online = false;
 }

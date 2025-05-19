@@ -18,6 +18,6 @@ public class DatasetDetailsDto {
     private String description ;
     private List<String> classes ;
     private List<Long> annotators ;
-    private Double advancement ;
+    private Integer advancement ;
     private  List <TaskDto> tasks ;
 }

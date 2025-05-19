@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.util.ArrayList;
+
 import java.util.List;
 
 @Entity
@@ -20,7 +20,7 @@ public class Dataset {
      String name;
      String description;
      Integer size;
-     Double advancement = 0d;
+     Integer advancement = 0;
      Boolean annotated = false;
 
      @OneToMany(mappedBy = "dataset" , cascade = CascadeType.ALL, orphanRemoval = true)

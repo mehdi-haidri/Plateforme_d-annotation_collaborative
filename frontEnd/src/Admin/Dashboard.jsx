@@ -32,6 +32,8 @@ import {
   Legend,
 } from "recharts"
 
+
+const API_URL = import.meta.env.VITE_API_URL
 // Mock data for the dashboard
 const MOCK_STATS = {
   totalUsers: 128,
@@ -41,8 +43,6 @@ const MOCK_STATS = {
   activeUsers: 87,
   completedTasks: 98,
   pendingTasks: 58,
-  userGrowth: 12.5,
-  taskGrowth: -4.2,
 }
 
 // Mock data for active users
@@ -52,7 +52,6 @@ const MOCK_ACTIVE_USERS = [
     name: "John Doe",
     email: "john.doe@example.com",
     role: "Admin",
-    lastActive: "2 minutes ago",
     status: "online",
   },
   {
@@ -60,7 +59,7 @@ const MOCK_ACTIVE_USERS = [
     name: "Jane Smith",
     email: "jane.smith@example.com",
     role: "Annotator",
-    lastActive: "5 minutes ago",
+
     status: "online",
   },
   {
@@ -68,7 +67,7 @@ const MOCK_ACTIVE_USERS = [
     name: "Michael Johnson",
     email: "michael.j@example.com",
     role: "Annotator",
-    lastActive: "12 minutes ago",
+
     status: "online",
   },
   {
@@ -76,7 +75,7 @@ const MOCK_ACTIVE_USERS = [
     name: "Emily Williams",
     email: "emily.w@example.com",
     role: "Annotator",
-    lastActive: "18 minutes ago",
+
     status: "online",
   },
   {
@@ -84,7 +83,7 @@ const MOCK_ACTIVE_USERS = [
     name: "David Brown",
     email: "david.b@example.com",
     role: "Admin",
-    lastActive: "25 minutes ago",
+
     status: "online",
   },
   {
@@ -92,7 +91,7 @@ const MOCK_ACTIVE_USERS = [
     name: "Sarah Miller",
     email: "sarah.m@example.com",
     role: "Annotator",
-    lastActive: "32 minutes ago",
+
     status: "online",
   },
   {
@@ -100,7 +99,6 @@ const MOCK_ACTIVE_USERS = [
     name: "Robert Wilson",
     email: "robert.w@example.com",
     role: "Annotator",
-    lastActive: "45 minutes ago",
     status: "away",
   },
   {
@@ -108,12 +106,19 @@ const MOCK_ACTIVE_USERS = [
     name: "Jennifer Taylor",
     email: "jennifer.t@example.com",
     role: "Annotator",
-    lastActive: "1 hour ago",
+
     status: "away",
   },
 ]
 
 // Mock data for login activity over the last week
+
+// Mock data for user distribution
+const MOCK_USER_DISTRIBUTION = [
+    { name: "Completd ", value: 12 },
+    { name: "Pending", value: 32 },
+    { name: "Not Assigned", value: 8 },
+]
 const MOCK_LOGIN_DATA = [
   { day: "Mon", logins: 42 },
   { day: "Tue", logins: 38 },
@@ -122,13 +127,6 @@ const MOCK_LOGIN_DATA = [
   { day: "Fri", logins: 60 },
   { day: "Sat", logins: 32 },
   { day: "Sun", logins: 28 },
-]
-
-// Mock data for user distribution
-const MOCK_USER_DISTRIBUTION = [
-  { name: "Admins", value: 12 },
-  { name: "Annotators", value: 32 },
-  { name: "Viewers", value: 8 },
 ]
 
 // Colors for the pie chart
@@ -145,12 +143,57 @@ const Dashboard = () => {
 
   // Simulate data loading
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsLoading(false)
-    }, 1000)
-
-    return () => clearTimeout(timer)
+      fetchForLineChart()
+      fetchData()
   }, [])
+    
+ const fetchForLineChart = async () => {
+    try {
+          
+            const response = await fetch(`${API_URL}analytics/logins/last7days`, {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                }
+            });
+            if (!response.ok) {
+                throw new Error("Network response was not ok");
+            }
+            const data = await response.json();
+            const labels = Object.keys(data);
+            const values = Object.values(data);
+            setLoginData(labels.map((day, index) => ({ day, logins: values[index] })));
+            setIsLoading(false);
+        } catch (error) {
+            console.error(
+                "An error occurred while fetching login data:",
+            );
+        }
+    }
+ const fetchData = async () => {
+    try {
+      const response = await fetch(`${API_URL}analytics/dashboard`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        },
+      });
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+        const data = await response.json();
+        console.log(data.userDistribution);
+        setUserDistribution(data.userDistribution);
+        setActiveUsers(data.activeUsers);
+        setStats(data.stats);
+    } catch (error) {
+      console.error("An error occurred while fetching active users:", error);
+    }
+  };
+     
+
 
   // Handle refresh
   const handleRefresh = async () => {
@@ -212,7 +255,7 @@ const Dashboard = () => {
                     <h3 className="text-2xl font-semibold text-gray-900 dark:text-white mt-1">{stats.totalUsers}</h3>
                     <span className="ml-2 text-sm font-medium text-green-600 dark:text-green-400 flex items-center">
                       <ArrowUpRight className="h-3 w-3 mr-1" />
-                      {stats.userGrowth}%
+                      
                     </span>
                   </div>
                 </div>
@@ -273,7 +316,6 @@ const Dashboard = () => {
                     <h3 className="text-2xl font-semibold text-gray-900 dark:text-white mt-1">{stats.totalTasks}</h3>
                     <span className="ml-2 text-sm font-medium text-red-600 dark:text-red-400 flex items-center">
                       <ArrowDownRight className="h-3 w-3 mr-1" />
-                      {Math.abs(stats.taskGrowth)}%
                     </span>
                   </div>
                 </div>
@@ -396,9 +438,6 @@ const Dashboard = () => {
                       Status
                     </th>
                     <th scope="col" className="px-6 py-3">
-                      Last Active
-                    </th>
-                    <th scope="col" className="px-6 py-3">
                       Actions
                     </th>
                   </tr>
@@ -438,13 +477,12 @@ const Dashboard = () => {
                         <span className="flex items-center">
                           <span
                             className={`h-2.5 w-2.5 rounded-full mr-2 ${
-                              user.status === "online" ? "bg-green-500" : "bg-amber-500"
+                              user.status ? "bg-green-500" : "bg-amber-500"
                             }`}
                           ></span>
-                          {user.status === "online" ? "Online" : "Away"}
+                          {user.status ? "Active" : "Deactivated"}
                         </span>
                       </td>
-                      <td className="px-6 py-4">{user.lastActive}</td>
                       <td className="px-6 py-4 text-right">
                         <button className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300">
                           <MoreHorizontal className="h-5 w-5" />

@@ -14,7 +14,7 @@ public class DatasetMinResposeDto  {
     Long id;
     String name;
     String description;
-    Double advancement ;
+    Integer advancement ;
     Boolean annotated ;
     Integer size ;
     Integer numberClasses;
