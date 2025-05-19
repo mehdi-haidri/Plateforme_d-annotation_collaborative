@@ -140,6 +140,7 @@ const Dashboard = () => {
   const [userDistribution, setUserDistribution] = useState(MOCK_USER_DISTRIBUTION)
   const [searchTerm, setSearchTerm] = useState("")
   const [isRefreshing, setIsRefreshing] = useState(false)
+  const [refreshData, setRefreshData] = useState("")
 
   // Simulate data loading
   useEffect(() => {
@@ -171,7 +172,14 @@ const Dashboard = () => {
             );
         }
     }
- const fetchData = async () => {
+    const fetchData = async () => {
+     const date = new Date();
+const formattedTime = date.toLocaleTimeString([], {
+  hour: '2-digit',
+  minute: '2-digit',
+  hour12: true,
+});
+      setRefreshData(formattedTime)
     try {
       const response = await fetch(`${API_URL}analytics/dashboard`, {
         method: "GET",
@@ -198,10 +206,16 @@ const Dashboard = () => {
   // Handle refresh
   const handleRefresh = async () => {
     setIsRefreshing(true)
-    // Simulate API call
-    setTimeout(() => {
-      setIsRefreshing(false)
-    }, 1000)
+      await fetchData()
+      await fetchForLineChart()
+      const date = new Date();
+const formattedTime = date.toLocaleTimeString([], {
+  hour: '2-digit',
+  minute: '2-digit',
+  hour12: true,
+});
+      setRefreshData(formattedTime)
+    setIsRefreshing(false)
   }
 
   // Filter active users based on search term
@@ -223,7 +237,7 @@ const Dashboard = () => {
         <div className="flex items-center gap-2">
           <span className="text-sm text-gray-500 dark:text-gray-400 flex items-center">
             <Calendar className="h-4 w-4 mr-1" />
-            Last updated: Today, 10:30 AM
+            Last updated: Today, {refreshData}
           </span>
           <button
             onClick={handleRefresh}
@@ -247,7 +261,7 @@ const Dashboard = () => {
           {/* Stats Cards */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
             {/* Total Users */}
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-5 border border-gray-200 dark:border-gray-700">
+            <div className="bg-white dark:bg-gray-900 rounded-lg shadow p-5 border border-gray-200 dark:border-gray-700">
               <div className="flex justify-between">
                 <div>
                   <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Total Users</p>
@@ -270,7 +284,7 @@ const Dashboard = () => {
             </div>
 
             {/* Total Datasets */}
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-5 border border-gray-200 dark:border-gray-700">
+            <div className="bg-white dark:bg-gray-900 rounded-lg shadow p-5 border border-gray-200 dark:border-gray-700">
               <div className="flex justify-between">
                 <div>
                   <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Total Datasets</p>
@@ -288,7 +302,7 @@ const Dashboard = () => {
             </div>
 
             {/* Total Annotators */}
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-5 border border-gray-200 dark:border-gray-700">
+            <div className="bg-white dark:bg-gray-900 rounded-lg shadow p-5 border border-gray-200 dark:border-gray-700">
               <div className="flex justify-between">
                 <div>
                   <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Total Annotators</p>
@@ -308,7 +322,7 @@ const Dashboard = () => {
             </div>
 
             {/* Total Tasks */}
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-5 border border-gray-200 dark:border-gray-700">
+            <div className="bg-white dark:bg-gray-900 rounded-lg shadow p-5 border border-gray-200 dark:border-gray-700">
               <div className="flex justify-between">
                 <div>
                   <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Total Tasks</p>
@@ -446,7 +460,7 @@ const Dashboard = () => {
                   {filteredUsers.map((user) => (
                     <tr
                       key={user.id}
-                      className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700"
+                      className="bg-white border-b dark:bg-gray-900 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700"
                     >
                       <td className="px-6 py-4">
                         <div className="flex items-center">

@@ -47,7 +47,7 @@ function Layout() {
                 <div className="p-2 bg-purple-100 rounded-lg dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 mr-3">
                   <Database className="h-6 w-6" />
                 </div>
-                <span className="self-center text-xl font-semibold sm:text-2xl whitespace-nowrap dark:text-white">
+                <span className="self-center text-xl font-semibold sm:text-2xl text-purple-600 whitespace-nowrap dark:text-white">
                   DataAnnotation
                 </span>
               </Link>
@@ -143,13 +143,14 @@ function Layout() {
         <div className="h-full px-3 pb-4 overflow-y-auto bg-white dark:bg-gray-800">
           <ul className="space-y-2 font-medium">
             <li>
-              <a
+              <Link
+                to={`${roles.ROLE_ADMIN}/`}
                 href="#"
                 className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group"
               >
                 <Home className="w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" />
                 <span className="ms-3">Home</span>
-              </a>
+              </Link>
             </li>
             <li>
               <Link
@@ -202,7 +203,7 @@ function Layout() {
       </aside>
 
       {/* Main Content */}
-      <div className="p-4 sm:ml-64 h-screen">
+      <div className="p-4 sm:ml-64 min-h-screen  bg-gray-50 dark:bg-gray-900">
         <div className="p-4 relative border border-gray-200 rounded-lg dark:border-gray-700 dark:bg-gray-800 bg-gray-50 mt-14">
           <Outlet context={{ setAlert }} />
         </div>
