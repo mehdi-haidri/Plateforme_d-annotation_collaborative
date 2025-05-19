@@ -15,6 +15,7 @@ import AnnotatorLayout from "../Annotator/Layout"
 import Midlware from "../Midlware";
 import AnnotatorTaskList from "../Annotator/task/Tasks";
 import TextCouples from "../Annotator/task/TextCouples";
+import Dashboard from "../Admin/Dashboard";
 
 
 const Routes = [
@@ -27,8 +28,8 @@ const Routes = [
         element: <Midlware  role = "ROLE_ADMIN"   > <Layout /></Midlware> ,
         children: [
             {
-                path: "home",
-                element: <h1>Home</h1>
+                path: "",
+                element: <Dashboard />
             },
             {
                 path: "datasets",

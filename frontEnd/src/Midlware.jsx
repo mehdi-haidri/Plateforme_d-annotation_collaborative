@@ -24,7 +24,7 @@ function Midlware({ children: next, role }) {
       } 
       return false;
     } catch (error) {
-      console.log(response);
+      console.log(error);
       if (response?.status === 401) {
         response = await response.json();
         console.log(response?.data?.error);
