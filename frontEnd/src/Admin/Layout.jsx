@@ -1,21 +1,28 @@
 
 import { useContext, useEffect, useState } from "react"
 import { Link, Outlet } from "react-router-dom"
-import { Home, Database, Users, LogOut, Sun, Moon, Menu, Settings, CreditCard, LayoutDashboard } from "lucide-react"
+import { Home, Database, Users, LogOut, Sun, Moon, Menu, Settings, CreditCard, LayoutDashboard ,User} from "lucide-react"
 import roles from "../config/roles"
 import { AlertContext } from "../App"
+import LogoutModal from "../Annotator/Components/LogoutModal"
 
 function Layout() {
   const [darkMode, setDarkMode] = useState(true)
   const { setAlert } = useContext(AlertContext)
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [userMenuOpen, setUserMenuOpen] = useState(false)
+  const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false)
 
-  const handleLogout = () => {
-    localStorage.removeItem("token")
-    localStorage.removeItem("role")
-    window.location.href = "/login"
+  const openLogoutModal = () => {
+    setIsLogoutModalOpen(true)
   }
+
+  const closeLogoutModal = () => {
+    setIsLogoutModalOpen(false)
+  }
+
+
+
 
   useEffect(() => {
     if (darkMode) {
@@ -58,15 +65,15 @@ function Layout() {
                   <button
                     onClick={() => setUserMenuOpen(!userMenuOpen)}
                     type="button"
-                    className="flex text-sm bg-gray-800 rounded-full focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600"
+                    className="flex text-sm dark:bg-gray-800 bg-white "
                     aria-expanded={userMenuOpen ? "true" : "false"}
                   >
-                    <span className="sr-only">Open user menu</span>
-                    <img
-                      className="w-8 h-8 rounded-full"
-                      src="https://flowbite.com/docs/images/people/profile-picture-5.jpg"
-                      alt="user photo"
-                    />
+                    
+                      <div className="flex flex-col justify-center items-end">
+                            <div className="text-sm end font-medium text-gray-900 dark:text-white">admin admin</div>
+                            <div className="text-sm text-gray-500 dark:text-gray-400">admin@example.com</div>
+                          </div>
+                    <User className="w-8 h-8 ml-3 text-purple-600 rounded-full" />
                   </button>
                 </div>
                 {userMenuOpen && (
@@ -115,7 +122,7 @@ function Layout() {
                       </li>
                       <li>
                         <button
-                          onClick={handleLogout}
+                         
                           className="flex w-full items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white"
                           role="menuitem"
                         >
@@ -176,9 +183,19 @@ function Layout() {
                 </span>
               </Link>
             </li>
+                        <li>
+              <Link
+                to={`${roles.ROLE_ADMIN}/profile`}
+                className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group"
+              >
+                <Settings className="shrink-0 w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" />
+                <span className="flex-1 ms-3 whitespace-nowrap">Settings</span>
+                
+              </Link>
+            </li>
             <li>
               <button
-                onClick={handleLogout}
+                onClick={openLogoutModal}
                 className="flex w-full items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group"
               >
                 <LogOut className="shrink-0 w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" />
@@ -201,6 +218,7 @@ function Layout() {
           </ul>
         </div>
       </aside>
+      <LogoutModal isOpen={isLogoutModalOpen} onClose={closeLogoutModal} />
 
       {/* Main Content */}
       <div className="p-4 sm:ml-64 min-h-screen  bg-gray-50 dark:bg-gray-900">
@@ -208,6 +226,7 @@ function Layout() {
           <Outlet context={{ setAlert }} />
         </div>
       </div>
+
     </>
   )
 }

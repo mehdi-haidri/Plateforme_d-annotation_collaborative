@@ -47,8 +47,9 @@ public class PlateformeDAnnotationCollaborativeApplication implements CommandLin
 
 
         Annotator annotator2 = new Annotator();
-        annotator2.setForAnnotator("2222222");
-        annotator2.setFirstName("2222222");
+        annotator2.setForAnnotator("issam");
+        annotator2.setLastName("issam");
+        annotator2.setFirstName("amine");
         annotator2.setRole(role2);
         annotator2.setEmail("22@gmail.com");
         annotator2.setPassword(encoder.encode("1234567"));
@@ -57,8 +58,9 @@ public class PlateformeDAnnotationCollaborativeApplication implements CommandLin
 
         Annotator annotator3 = new Annotator();
         annotator3.setForAnnotator("333333333");
-        annotator3.setFirstName("333333333");
-        annotator3.setEmail("333333333@dddd.com");
+        annotator3.setFirstName("morad");
+        annotator3.setLastName("l7aj");
+        annotator3.setEmail("33@dddd.com");
         annotator3.setState(true);
         annotator3.setRole(role2);
         userRepository.save( annotator3);

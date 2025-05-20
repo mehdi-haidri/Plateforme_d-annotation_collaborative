@@ -7,15 +7,19 @@ import com.project.plateforme_dannotation_collaborative.Dto.Admin.UserUpdateDto;
 import com.project.plateforme_dannotation_collaborative.Dto.UserLoginDto;
 import com.project.plateforme_dannotation_collaborative.Exception.CustomhandleMethodArgumentNotValidException;
 import com.project.plateforme_dannotation_collaborative.Model.Annotator;
+import com.project.plateforme_dannotation_collaborative.Model.User;
 import com.project.plateforme_dannotation_collaborative.Repository.UserLoginEventRepository;
 import com.project.plateforme_dannotation_collaborative.Service.AnnotatorSevice;
 import com.project.plateforme_dannotation_collaborative.Service.UserSevice;
+import jakarta.servlet.ServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
 
 
@@ -40,7 +44,7 @@ public class UserController {
     }
 
     @PostMapping("/annotator/update")
-    public ResponseEntity<?> annotatorUpdate(@Valid @RequestBody UserUpdateDto user)  {
+    public ResponseEntity<?> annotatorUpdate(@Valid @RequestBody UserUpdateDto user) throws CustomhandleMethodArgumentNotValidException {
         Response response  = new Response();
         response.setError(false);
         userSevice.updateUser(user);
@@ -104,4 +108,41 @@ public class UserController {
         annotatorSevice.save(annotator);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
+
+    @GetMapping("/logout")
+    public ResponseEntity<?> logout(HttpServletRequest request){
+
+       Long userId =  (Long) request.getAttribute("userId");
+       User user = userSevice.getUserById(userId);
+       user.setOnline(false);
+       userSevice.save(user);
+       Response response  = new Response();
+       response.setError(false);
+
+        return ResponseEntity.ok("logout Successfully");
+    }
+
+    @GetMapping("/user")
+    public  ResponseEntity<?> getUser(HttpServletRequest request){
+        Long userId =  (Long) request.getAttribute("userId");
+        User user = userSevice.getUserById(userId);
+        Response response  = new Response();
+        response.setError(false);
+        response.getData().put("user" , user);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @PutMapping("/update")
+    public  ResponseEntity<?> updateUser( @Valid @RequestBody UserUpdateDto userUpdateDto ,HttpServletRequest request ) throws CustomhandleMethodArgumentNotValidException {
+
+        Long userId =  (Long) request.getAttribute("userId");
+        userUpdateDto.setId(userId);
+        System.out.println(userUpdateDto);
+        userSevice.updateUser(userUpdateDto );
+
+        return ResponseEntity.ok("updated successfully");
+
+
+    }
+
 }

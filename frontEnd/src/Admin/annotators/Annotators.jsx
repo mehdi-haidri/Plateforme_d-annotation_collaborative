@@ -19,6 +19,11 @@ import {
   MoreHorizontal,
   Download,
   Upload,
+  UserRoundSearch,
+  User,
+  Info,
+  ArrowLeftRight,
+  FolderCheck
 } from "lucide-react"
 import UpdateAnnotatorModal from "./UpdateAnnotator";
 
@@ -36,22 +41,27 @@ const Annotators = () => {
     {
       field: "id",
       width: 70,
+      icon: <Info className="w-4 h-4 mr-1" />,
     },
     {
       field: "firstName",
       width: 130,
+      icon: <User className="w-4 h-4 mr-1" />,
     },
     {
       field: "lastame",
       width: 130,
-    },
-    {
-      field: "status",
-      width: 90,
+      icon: <UserRoundSearch className="w-4 h-4 mr-1" />,
     },
     {
       field: "action",
       width: 90,
+      icon: <ArrowLeftRight className="w-4 h-4 mr-1" />
+    },
+    {
+      field: "status",
+      width: 90,
+      icon: <FolderCheck className="w-4 h-4 mr-1" />
     },
   ];
   const fetchAnnotators = async () => {
@@ -167,7 +177,7 @@ const Annotators = () => {
         </div>
         <Link
           to={`${roles.ROLE_ADMIN}/annotators/addAnnotator`}
-          className="inline-flex items-center justify-center px-4 py-2 text-sm font-medium text-white bg-purple-600 border border-transparent rounded-lg shadow-sm hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 transition-colors"
+          className="inline-flex items-center justify-center px-4 py-2 text-sm font-medium text-white bg-purple-600 border border-transparent rounded-lg shadow-sm hover:bg-purple-700 focus:outline-none  transition-colors"
         >
           <UserPlus className="w-4 h-4 mr-2" />
           Add Annotator
@@ -298,8 +308,11 @@ const Annotators = () => {
               <thead className="text-xs font-medium text-gray-700 uppercase bg-gray-50 dark:bg-gray-800 dark:text-gray-300">
                 <tr>
                   {columns.map((col) => (
-                    <th key={col.field} scope="col" className="px-6 py-4" style={{ width: `${col.width}px` }}>
-                      {col.label || col.field}
+                    <th key={col.field} scope="col" className="px-6 py-4" >
+                     <div className="flex items-center">
+                          {col?.icon}
+                          {col.field.charAt(0).toUpperCase() + col.field.slice(1)}
+                  </div>
                     </th>
                   ))}
                 </tr>
@@ -313,25 +326,7 @@ const Annotators = () => {
                     <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">#{row.id}</td>
                     <td className="px-6 py-4">{row.firstName}</td>
                     <td className="px-6 py-4">{row.lastName}</td>
-                    <td className="px-6 py-4">
-                      {row.status ? (
-                        <div className="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-medium text-green-700 bg-green-100 rounded-full dark:bg-green-900/30 dark:text-green-400">
-                          <span className="relative flex h-2 w-2">
-                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-                            <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
-                          </span>
-                          Active
-                        </div>
-                      ) : (
-                        <div className="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-medium text-red-700 bg-red-100 rounded-full dark:bg-red-900/30 dark:text-red-400">
-                          <span className="relative flex h-2 w-2">
-                            <span className="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>
-                          </span>
-                          Inactive
-                        </div>
-                      )}
-                    </td>
-                    <td className="px-6 py-4">
+                     <td className=" py-4">
                       <div className="flex gap-2">
                         <button
                           onClick={() => openEditModal(row.id)}
@@ -363,6 +358,25 @@ const Annotators = () => {
                         </button>
                       </div>
                     </td>
+                    <td className="px-6 py-4">
+                      {row.status ? (
+                        <div className="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-medium text-green-700 bg-green-100 rounded-full dark:bg-green-900/30 dark:text-green-400">
+                          <span className="relative flex h-2 w-2">
+                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                            <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+                          </span>
+                          Active
+                        </div>
+                      ) : (
+                        <div className="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-medium text-red-700 bg-red-100 rounded-full dark:bg-red-900/30 dark:text-red-400">
+                          <span className="relative flex h-2 w-2">
+                            <span className="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>
+                          </span>
+                          Inactive
+                        </div>
+                      )}
+                    </td>
+                   
                   </tr>
                 ))}
               </tbody>

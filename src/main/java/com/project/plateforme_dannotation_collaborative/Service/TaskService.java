@@ -26,7 +26,12 @@ public class TaskService {
         Annotator annotator = annotatorSevice.getAnnotatorById(annotatorId);
 
         List<TaskDto>  tasks = taskRepository.findAllByAnnotator(annotator).stream().map(t->
-                new TaskDto(t.getId(),t.getLimitDate(),t.getAdvancement(),t.getSize(),t.getDataset().getName(),t.getCreatedAt())
+                new TaskDto(t.getId(),
+                        t.getLimitDate(),
+                        t.getAdvancement(),
+                        t.getSize(),
+                        t.getDataset().getName(),
+                        t.getCreatedAt(),t.getDataset().getDescription())
         ).toList();
         return tasks ;
     }

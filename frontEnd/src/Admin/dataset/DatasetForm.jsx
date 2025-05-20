@@ -1,7 +1,7 @@
 
 
 import { useState, useRef, useEffect } from "react"
-import { Calendar, FileUp, Plus, X } from "lucide-react"
+import { Calendar, Database, FileUp, Plus, X } from "lucide-react"
 import { useOutletContext } from "react-router-dom";
 const API_URL = import.meta.env.VITE_API_URL;
 import { useNavigate } from "react-router-dom";
@@ -251,6 +251,8 @@ export default function DatasetForm() {
         response.data?.errorType == "validation" ? setValidation(response.data.errors) : setAlert({ type: "error", message: "Bad request" });
         console.log(response.data.errors);
       }
+    }finally{
+      setIsLoading(false)
     }
   }
 
@@ -267,7 +269,10 @@ export default function DatasetForm() {
   return (
     <div className="px-4 py-6">
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">New Dataset</h1>
+        <div className="flex items-center">
+          <Database className="h-8 w-8 text-blue-600 mr-3" />
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">New Dataset</h1>
+        </div>
         <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">Create a new dataset for annotation</p>
       </div>
 
@@ -393,8 +398,12 @@ export default function DatasetForm() {
                             onDateSelect={setDate}
                             onClose={() => setShowDatePicker(false)}
                           />
+                        
                         </div>
                       )}
+                       {validation?.datelimit && (
+                    <p className="mt-1 text-sm text-red-600 dark:text-red-500">{validation.datelimit}</p>
+                  )}
                     </div>
                   </div>
                 )}

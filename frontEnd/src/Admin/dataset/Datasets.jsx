@@ -2,7 +2,9 @@ import { useEffect,useState } from 'react'
 import Table from '../components/Table'
 import { Link } from 'react-router-dom';
 import roles from '../../config/roles';
-import { Database, Plus, Search, RefreshCw, Filter, Loader2, AlertTriangle, BarChart3, Check } from 'lucide-react'
+import { Database, Plus, Search, RefreshCw, Filter, Loader2, BarChart3, Check } from 'lucide-react'
+import {  Info,  Tag,  CheckCircle ,ArrowLeftRight } from "lucide-react"
+
 const   API_URL = import.meta.env.VITE_API_URL;
 function Datasets() {
 
@@ -14,31 +16,39 @@ function Datasets() {
     const columns = [
         {
             field: 'id',
-            width: 70,
+             width: 70,
+             icon: <Info className="w-4 h-4 mr-1" />,
           },
           {
             field: 'name',
             width: 130,
+            icon: <Database className="w-4 h-4 mr-1" />,
+            
           },
           {
             field: 'size',
             width: 130,
+            icon: <BarChart3 className="w-4 h-4 mr-1" />,
           },
         {
             field: 'classes',
-            width: 90,
+          width: 90,
+            icon: <Tag className="w-4 h-4 mr-1" />,
         },
         {
             field: 'advancement',
-            width: 90,
+          width: 90,
+            icon: <BarChart3 className="w-4 h-4 mr-1" />,
         },
         {
             field: 'status',
-            width: 90,
+          width: 90,
+            icon: <CheckCircle className="w-4 h-4 mr-1" />,
         },
         {
             field: 'action',
-            width: 90,
+          width: 90,
+             icon: <ArrowLeftRight className="w-4 h-4 mr-1" />,
         }
     
     ]
@@ -109,7 +119,7 @@ function Datasets() {
         </div>
         <button
           type="button"
-          className="inline-flex items-center justify-center px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-lg shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
+          className="inline-flex items-center justify-center px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-lg shadow-sm hover:bg-blue-700 focus:outline-none  transition-colors"
         >
           <Link to={`${roles.ROLE_ADMIN}/datasets/addDataset`} className="flex items-center">
             <Plus className="h-4 w-4 mr-2" />

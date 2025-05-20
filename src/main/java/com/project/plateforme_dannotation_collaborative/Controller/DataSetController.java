@@ -1,9 +1,11 @@
 package com.project.plateforme_dannotation_collaborative.Controller;
 
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.project.plateforme_dannotation_collaborative.Dto.Admin.*;
+import com.project.plateforme_dannotation_collaborative.Exception.CustomhandleMethodArgumentNotValidException;
 import com.project.plateforme_dannotation_collaborative.Model.Dataset;
 import com.project.plateforme_dannotation_collaborative.Service.DataSetService;
 import jakarta.validation.Valid;
@@ -20,6 +22,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.List;
 
 
@@ -32,7 +35,7 @@ public class DataSetController {
     private final DataSetService dataSetService;
 
     @PostMapping("/addDataset")
-    public ResponseEntity <?> AddDataSet( @Valid @ModelAttribute DatasetRequestDto dataSetRequestDto)  {
+    public ResponseEntity <?> AddDataSet( @Valid @ModelAttribute DatasetRequestDto dataSetRequestDto) throws CustomhandleMethodArgumentNotValidException {
 
         Response response = new Response();
         try {
@@ -48,7 +51,7 @@ public class DataSetController {
         response.setError(false);
         response.getData().put("dataset", newDataset);
         return new ResponseEntity<>(response , HttpStatus.OK);
-        }catch (Exception e){
+        }catch (IOException e){
            response.setError(true);
            response.getData().put("error", e.getMessage());
            return new ResponseEntity<>(response , HttpStatus.INTERNAL_SERVER_ERROR);

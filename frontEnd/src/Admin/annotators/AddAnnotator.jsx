@@ -1,3 +1,4 @@
+import { User } from "lucide-react";
 import { useRef, useState } from "react";
 import { useNavigate, useOutletContext } from "react-router-dom";
 
@@ -58,8 +59,12 @@ function AddAnnotator() {
 
   return (
     <div className="px-4 py-6">
-      <div className="mb-6">
+      <div className=" mb-6">
+        <div className="flex items-center"> 
+
+        <User className="h-8 w-8 text-purple-600 mr-3" />
         <h1 className="text-2xl font-bold text-gray-900 dark:text-white">New Annotator</h1>
+        </div>
         <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">Add a new annotator to your team</p>
       </div>
 

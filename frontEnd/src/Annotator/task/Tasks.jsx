@@ -1,51 +1,77 @@
-import { useEffect, useState } from "react";
-import { Link,useOutletContext } from "react-router-dom";
-const API_URL = import.meta.env.VITE_API_URL;
-import roles from "../../config/roles";
+import { useEffect, useState } from "react"
+import { Link, useOutletContext } from "react-router-dom"
+import {
+  RefreshCw,
+  Loader2,
+  CheckSquare,
+  Clock,
+  Database,
+  ChevronLeft,
+  ChevronRight,
+  Calendar,
+  FileText,
+  BarChart3,
+  AlertTriangle,
+} from "lucide-react"
+import roles from "../../config/roles"
+import { se } from "react-day-picker/locale"
+
+const API_URL = import.meta.env.VITE_API_URL
+
 
 const Annotators = () => {
-    const { setAlert } = useOutletContext();
-  const [rows, setRows] = useState([]);
+    const { setAlert } = useOutletContext()
+  const [rows, setRows] = useState([])
   const [isLoading, setIsLoading] = useState(true)
+  const [isRefreshing, setIsRefreshing] = useState(false);
+
+
   const columns = [
     {
       field: "id",
       width: 70,
-      },
+      icon: <Database className="w-4 h-4 mr-1" />,
+    },
     {
       field: "dataset",
       width: 130,
+      icon: <Database className="w-4 h-4 mr-1" />,
     },
     {
       field: "description",
       width: 130,
+      icon: <FileText className="w-4 h-4 mr-1" />,
     },
     {
       field: "rowCount",
       width: 130,
+      icon: <BarChart3 className="w-4 h-4 mr-1" />,
     },
     {
       field: "advancement",
       width: 130,
+      icon: <BarChart3 className="w-4 h-4 mr-1" />,
     },
     {
       field: "startDate",
       width: 130,
-      
+      icon: <Calendar className="w-4 h-4 mr-1" />,
     },
     {
       field: "limitDate",
       width: 130,
-      },
+      icon: <Calendar className="w-4 h-4 mr-1" />,
+    },
     {
       field: "action",
       width: 90,
     },
-  ];
+  ]
 
-  const fetchAnnotators = async () => {
+  const fetchTasks = async () => {
     try {
       setIsLoading(true)
+      setIsRefreshing(true)
       let response = await fetch(
         API_URL + "annotator/tasks",
         {
@@ -68,119 +94,199 @@ const Annotators = () => {
       console.error(error);
     } finally {
       setIsLoading(false)
+      setIsRefreshing(false)
     }
   };
 
     useEffect(() => {
       
-    fetchAnnotators();
+    fetchTasks();
    
   }, []);
     
-    
+    const totalTasks = rows.length
+  const completedTasks = rows.filter((task) => task.advancement === 100).length
+  const pendingTasks = rows.filter((task) => task.advancement < 100).length
 
   return (
-    <div className="px-4 py-6">
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Tasks</h1>
+   <div className="px-4 py-6">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
+        <div className="flex items-center">
+          <div className="p-2 bg-purple-100 rounded-lg dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 mr-3">
+            <CheckSquare className="h-6 w-6" />
+          </div>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">My Tasks</h1>
+        </div>
         <button
-          onClick={() => fetchAnnotators()}
-          className="text-blue-700 bg-blue-100 hover:bg-blue-200  font-medium rounded-lg text-sm px-5 py-2.5 transition-all duration-200 shadow-sm dark:bg-blue-900/30 dark:text-blue-300 dark:hover:bg-blue-900/50"
+          onClick={() => fetchTasks()}
+          disabled={isRefreshing}
+          className="inline-flex items-center justify-center px-4 py-2.5 text-sm font-medium text-purple-700 bg-purple-100 rounded-lg hover:bg-purple-200 focus:ring-4 focus:outline-none focus:ring-purple-300 transition-all duration-200 shadow-sm dark:bg-purple-900/30 dark:text-purple-400 dark:hover:bg-purple-900/50 dark:focus:ring-purple-800 disabled:opacity-70"
         >
-          Refresh
+          {isRefreshing ? (
+            <>
+              <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+              Refreshing...
+            </>
+          ) : (
+            <>
+              <RefreshCw className="w-4 h-4 mr-2" />
+              Refresh
+            </>
+          )}
         </button>
       </div>
 
-      {/* {error && (
-        <div
-          className="p-4 mb-4 text-sm text-red-800 rounded-lg bg-red-50 dark:bg-gray-800 dark:text-red-400"
-          role="alert"
-        >
-          <span className="font-medium">Error!</span> {error}
+      {/* Stats Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4 border border-gray-200 dark:border-gray-700">
+          <div className="flex items-center">
+            <div className="p-3 rounded-full bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 mr-4">
+              <Database className="h-6 w-6" />
+            </div>
+            <div>
+              <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Total Tasks</p>
+              <p className="text-2xl font-semibold text-gray-900 dark:text-white">{totalTasks}</p>
+            </div>
+          </div>
         </div>
-      )} */}
 
-      <div className="relative overflow-x-auto shadow-md sm:rounded-lg">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4 border border-gray-200 dark:border-gray-700">
+          <div className="flex items-center">
+            <div className="p-3 rounded-full bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400 mr-4">
+              <CheckSquare className="h-6 w-6" />
+            </div>
+            <div>
+              <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Completed</p>
+              <p className="text-2xl font-semibold text-gray-900 dark:text-white">{completedTasks}</p>
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4 border border-gray-200 dark:border-gray-700">
+          <div className="flex items-center">
+            <div className="p-3 rounded-full bg-amber-100 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400 mr-4">
+              <Clock className="h-6 w-6" />
+            </div>
+            <div>
+              <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Pending</p>
+              <p className="text-2xl font-semibold text-gray-900 dark:text-white">{pendingTasks}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Table */}
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
         {isLoading ? (
-          <div className="flex items-center justify-center h-64 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg">
-            <div role="status">
-              <svg
-                aria-hidden="true"
-                className="w-8 h-8 text-gray-200 animate-spin dark:text-gray-600 fill-blue-600"
-                viewBox="0 0 100 101"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
-                  fill="currentColor"
-                />
-                <path
-                  d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z"
-                  fill="currentColor"
-                />
-              </svg>
-              <span className="sr-only">Loading...</span>
+          <div className="flex items-center justify-center h-64">
+            <div className="flex flex-col items-center">
+              <Loader2 className="w-10 h-10 text-purple-600 animate-spin mb-4" />
+              <p className="text-gray-500 dark:text-gray-400">Loading tasks...</p>
             </div>
           </div>
         ) : (
-          <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
-            <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
-              <tr>
-                {columns.map((col) => (
-                  <th key={col.field} scope="col" className="px-6 py-3" style={{ width: `${col.width}px` }}>
-                    {col.label || col.field}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {rows.length > 0 ? (
-                rows.map((row) => (
-                  <tr
-                    key={row.id}
-                    className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600"
-                  >
-                    <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">{row.id}</td>
-                    <td className="px-6 py-4 whitespace-nowrap">{row.dataset}</td>
-                    <td className="px-6 py-4">{row.description}</td>
-                    <td className="px-6 py-4 whitespace-nowrap">{row.rowCount}</td>
-                    <td className="px-6 py-4 whitespace-nowrap">{row.advancement}</td>
-                    <td className="px-6 py-4 whitespace-nowrap">{row.startDate}</td>
-                    <td className="px-6 py-4 whitespace-nowrap">{row.limitDate}</td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <Link
-                        to={`${roles.ROLE_ANNOTATOR}/task/${row.id}`}
-                        className="text-blue-700 bg-blue-100 hover:bg-blue-200  font-medium rounded-lg text-xs px-4 py-1.5 text-center inline-flex items-center shadow-sm transition-all duration-200 dark:bg-blue-900/30 dark:text-blue-300 dark:hover:bg-blue-900/50 "
-                      >
-                        START
-                      </Link>
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
+              <thead className="text-xs font-medium text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-300">
+                <tr>
+                  {columns.map((col) => (
+                    <th key={col.field} scope="col" className="px-6 py-4" style={{ width: `${col.width}px` }}>
+                      <div className="flex items-center">
+                        {col.icon && col.icon}
+                        {col.field.charAt(0).toUpperCase() + col.field.slice(1)}
+                      </div>
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
+                {rows.length > 0 ? (
+                  rows.map((row) => (
+                    <tr
+                      key={row.id}
+                      className="bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                    >
+                      <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                        #{row.id}
+                      </td>
+                      <td className="px-6 py-4 font-medium">{row.dataset}</td>
+                      <td className="px-6 py-4">{row.description}</td>
+                      <td className="px-6 py-4 whitespace-nowrap">{row.rowCount} items</td>
+                      <td className="px-6 py-4">
+                        <div className="flex items-center">
+                          <div className="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700 mr-2">
+                            <div
+                              className={`h-2.5 rounded-full ${
+                                row.advancement === 100
+                                  ? "bg-green-600 dark:bg-green-500"
+                                  : "bg-purple-600 dark:bg-purple-500"
+                              }`}
+                              style={{ width: `${row.advancement}%` }}
+                            ></div>
+                          </div>
+                          <span className="text-sm font-medium">{row.advancement.toFixed(2)}%</span>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="inline-flex items-center text-gray-500 dark:text-gray-400">
+                          <Calendar className="w-4 h-4 mr-1 text-gray-400" />
+                          {row.startDate}
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="inline-flex items-center text-gray-500 dark:text-gray-400">
+                          <Calendar className="w-4 h-4 mr-1 text-gray-400" />
+                          {row.limitDate}
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <Link
+                          to={`${roles.ROLE_ANNOTATOR}/task/${row.id}`}
+                          className={`inline-flex items-center justify-center px-3 py-1.5 text-xs font-medium rounded-lg transition-colors ${
+                            row.advancement === 100
+                              ? "text-green-700 bg-green-100 hover:bg-green-200 dark:bg-green-900/30 dark:text-green-400 dark:hover:bg-green-900/50"
+                              : "text-purple-700 bg-purple-100 hover:bg-purple-200 dark:bg-purple-900/30 dark:text-purple-400 dark:hover:bg-purple-900/50"
+                          }`}
+                        >
+                          {row.advancement === 100 ? "REVIEW" : "START"}
+                        </Link>
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr className="bg-white dark:bg-gray-800">
+                    <td colSpan={columns.length} className="px-6 py-12 text-center">
+                      <div className="flex flex-col items-center justify-center">
+                        <AlertTriangle className="w-10 h-10 text-gray-300 dark:text-gray-600 mb-4" />
+                        <p className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-1">No tasks found</p>
+                        <p className="text-gray-500 dark:text-gray-400">
+                          You don't have any assigned tasks at the moment.
+                        </p>
+                      </div>
                     </td>
                   </tr>
-                ))
-              ) : (
-                <tr className="bg-white dark:bg-gray-800">
-                  <td colSpan={columns.length} className="px-6 py-4 text-center text-gray-500 dark:text-gray-400">
-                    No tasks found
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
+                )}
+              </tbody>
+            </table>
+          </div>
         )}
       </div>
 
+      {/* Pagination */}
       {rows.length > 0 && (
-        <div className="flex items-center justify-between mt-4">
+        <div className="flex flex-col sm:flex-row items-center justify-between mt-6 gap-4">
           <div className="text-sm text-gray-700 dark:text-gray-400">
             Showing <span className="font-medium">{rows.length}</span> tasks
           </div>
-          <div className="inline-flex mt-2 xs:mt-0 gap-1">
-            <button className="flex items-center justify-center px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 focus:ring-4 focus:outline-none focus:ring-gray-100 shadow-sm transition-all duration-200 dark:bg-gray-800/60 dark:text-gray-300 dark:hover:bg-gray-800 dark:focus:ring-gray-700">
-              Prev
+          <div className="inline-flex gap-1">
+            <button className="inline-flex items-center justify-center px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 disabled:opacity-50 disabled:cursor-not-allowed dark:bg-gray-800 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-700">
+              <ChevronLeft className="w-4 h-4 mr-1" />
+              Previous
             </button>
-            <button className="flex items-center justify-center px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 focus:ring-4 focus:outline-none focus:ring-gray-100 shadow-sm transition-all duration-200 dark:bg-gray-800/60 dark:text-gray-300 dark:hover:bg-gray-800 dark:focus:ring-gray-700">
+            <button className="inline-flex items-center justify-center px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 disabled:opacity-50 disabled:cursor-not-allowed dark:bg-gray-800 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-700">
               Next
+              <ChevronRight className="w-4 h-4 ml-1" />
             </button>
           </div>
         </div>

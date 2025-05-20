@@ -34,6 +34,7 @@ public class GlobalExeptionHandler {
         response.getData().put("errors" , errors);
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
+
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity<String> handleDataIntegrityViolationException(DataIntegrityViolationException ex) {
         Throwable cause = ex.getCause();
@@ -45,6 +46,7 @@ public class GlobalExeptionHandler {
         }
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Database error occurred.");
     }
+
     @ExceptionHandler(CustomhandleMethodArgumentNotValidException.class)
     public ResponseEntity<?> customHandleMethodArgumentNotValidException(CustomhandleMethodArgumentNotValidException ex) {
        Response response = new Response();

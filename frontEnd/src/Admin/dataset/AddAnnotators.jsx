@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import { useNavigate, useOutletContext, useParams } from "react-router-dom";
 import { DayPicker } from "react-day-picker";
 import { Calendar, Users, Check, Loader2, ChevronDown, Info, Filter, Search, CheckSquare, Square } from "lucide-react"
+import {   CheckCircle ,ArrowLeftRight  , User ,AtSign} from "lucide-react"
+import roles from "../../config/roles";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -13,7 +15,6 @@ const AddAnnotators = () => {
   const [rows, setRows] = useState([])
   const [date, setDate] = useState()
   const [isLoading, setIsLoading] = useState(false)
-  const [isDatePickerOpen, setIsDatePickerOpen] = useState(false)
   const [searchTerm, setSearchTerm] = useState("")
   const [selectAll, setSelectAll] = useState(false)
    
@@ -21,22 +22,27 @@ const AddAnnotators = () => {
     {
       field: "id",
       width: 70,
+      icon: <Info className="w-4 h-4 mr-1" />,
     },
     {
-      field: "firstName",
+      field: "name",
       width: 130,
+      icon: <User className="w-4 h-4 mr-1" />,
     },
     {
-      field: "lastame",
+      field: "email",
       width: 130,
+      icon: <AtSign className="w-4 h-4 mr-1" />,
     },
     {
       field: "status",
       width: 90,
+      icon: <CheckCircle className="w-4 h-4 mr-1" />,
     },
     {
       field: "action",
       width: 90,
+      icon: <ArrowLeftRight className="w-4 h-4 mr-1" />,
     },
   ];
   const fetchAnnotators = async () => {
@@ -54,13 +60,14 @@ const AddAnnotators = () => {
         throw new Error("Network response was not ok");
       }
       response = await response.json();
+      console.log(response);
       setRows(
         response.data?.annotators.map((annotator) => {
           return {
             id: annotator.id,
-            firstName: annotator.firstName,
-            lastName: annotator.lastName,
-            status: annotator.status,
+            name: annotator.firstName + " " + annotator.lastName,
+            email: annotator.email,
+            status: annotator.state,
           };
         })
         );
@@ -75,10 +82,12 @@ const AddAnnotators = () => {
     fetchAnnotators();
     console.log(id);
   }, []);
+
+  console.log(rows)
     
   const handleSubmit = async () => {
         setIsLoading(true);
-        
+        console.log(selectedAnnotators ,datasetId , date?.toISOString() )
         try {
             let response = await fetch(API_URL+'datasets/addAnnotators', {
                 method: "POST",
@@ -95,7 +104,7 @@ const AddAnnotators = () => {
               response = await response.json();
             
             setAlert({ type: "success", message: "Annotators created successfully" });
-           Navigate(`/datasets`);
+           Navigate(`${roles.ROLE_ADMIN}/datasets`);
           } catch (error) {
             console.error(error);
           }
@@ -122,7 +131,7 @@ const handleSelectAll = () => {
 
   const filteredRows = rows.filter(
     (row) =>
-      (row.firstName?.toLowerCase().includes(searchTerm.toLowerCase()) || row.lastName?.toLowerCase().includes(searchTerm.toLowerCase()))
+      (row.name?.toLowerCase().includes(searchTerm.toLowerCase()) )
   )
 
   return (
@@ -235,8 +244,11 @@ const handleSelectAll = () => {
             <thead className="text-xs font-medium text-gray-700 uppercase bg-gray-50 dark:bg-gray-800 dark:text-gray-300">
               <tr>
                 {colums.map((col) => (
-                  <th key={col.field} scope="col" className="px-6 py-4" style={{ width: `${col.width}px` }}>
-                    {col.label || col.field}
+                  <th key={col.field} scope="col" className="px-6 py-4" >
+                      <div className="flex items-center">
+                          {col?.icon}
+                          {col.field.charAt(0).toUpperCase() + col.field.slice(1)}
+                  </div>
                   </th>
                 ))}
               </tr>
@@ -248,8 +260,8 @@ const handleSelectAll = () => {
                   className="bg-white dark:bg-gray-900 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
                 >
                   <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">#{row.id}</td>
-                  <td className="px-6 py-4">{row.firstName}</td>
-                  <td className="px-6 py-4">{row.lastName}</td>
+                  <td className="px-6 py-4">{row.name}</td>
+                  <td className="px-6 py-4">{row.email}</td>
                   <td className="px-6 py-4">
                     <div className="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-medium text-green-700 bg-green-100 rounded-full dark:bg-green-900/30 dark:text-green-400">
                       <span className="relative flex h-2 w-2">

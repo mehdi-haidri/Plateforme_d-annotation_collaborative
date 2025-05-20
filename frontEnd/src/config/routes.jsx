@@ -16,6 +16,7 @@ import Midlware from "../Midlware";
 import AnnotatorTaskList from "../Annotator/task/Tasks";
 import TextCouples from "../Annotator/task/TextCouples";
 import Dashboard from "../Admin/Dashboard";
+import Profile from "../Admin/components/Profile";
 
 
 const Routes = [
@@ -38,20 +39,25 @@ const Routes = [
                 {
                 path: "",
                 element: <Datasets/>
-            },
-                    {
+                },
+                {
                 path: "AddDataset",
                 element: <DatasetForm/>
-            },
-            {
+                },
+                {
                 path: "add-annotators/:id",
                 element: <AddAnnotators/>
-                    },
-                    {
+                },
+                {
                 path: ":id",
                 element: <DatasetDetails/>
-            }
+                }
                 ]
+            },
+            {
+                path :"profile",
+                element: <Profile/>
+
             },
             {
                 path: "annotators",

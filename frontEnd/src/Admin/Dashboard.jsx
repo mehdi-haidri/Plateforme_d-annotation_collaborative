@@ -17,10 +17,13 @@ import {
   ChevronRight,
   BarChart3,
   PieChart,
+  ShieldCheck,
+  User,
+  ArrowLeftRight,
+  CheckCircle,
+  
 } from "lucide-react"
 import {
-  LineChart,
-  Line,
   XAxis,
   YAxis,
   CartesianGrid,
@@ -30,6 +33,8 @@ import {
   Pie,
   Cell,
   Legend,
+  AreaChart,
+  Area
 } from "recharts"
 
 
@@ -130,7 +135,7 @@ const MOCK_LOGIN_DATA = [
 ]
 
 // Colors for the pie chart
-const COLORS = ["#8884d8", "#82ca9d", "#ffc658", "#ff8042"]
+const COLORS = ["#05df72d1","#9810fa", "#ffb900", "#ffc658", "#ff8042"]
 
 const Dashboard = () => {
   const [isLoading, setIsLoading] = useState(true)
@@ -141,6 +146,7 @@ const Dashboard = () => {
   const [searchTerm, setSearchTerm] = useState("")
   const [isRefreshing, setIsRefreshing] = useState(false)
   const [refreshData, setRefreshData] = useState("")
+  
 
   // Simulate data loading
   useEffect(() => {
@@ -209,13 +215,13 @@ const formattedTime = date.toLocaleTimeString([], {
       await fetchData()
       await fetchForLineChart()
       const date = new Date();
-const formattedTime = date.toLocaleTimeString([], {
-  hour: '2-digit',
-  minute: '2-digit',
-  hour12: true,
-});
+      const formattedTime = date.toLocaleTimeString([], {
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: true,
+      });
       setRefreshData(formattedTime)
-    setIsRefreshing(false)
+      setIsRefreshing(false)
   }
 
   // Filter active users based on search term
@@ -358,30 +364,25 @@ const formattedTime = date.toLocaleTimeString([], {
                 </div>
               </div>
               <div className="h-80">
-                <ResponsiveContainer width="100%" height="100%">
-                  <LineChart data={loginData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#374151" opacity={0.1} />
-                    <XAxis dataKey="day" stroke="#6B7280" />
-                    <YAxis stroke="#6B7280" />
-                    <Tooltip
-                      contentStyle={{
-                        backgroundColor: "#1F2937",
-                        borderColor: "#374151",
-                        color: "#F9FAFB",
-                      }}
-                      itemStyle={{ color: "#F9FAFB" }}
-                      labelStyle={{ color: "#F9FAFB" }}
-                    />
-                    <Line type="monotone" dataKey="logins" stroke="#8884d8" strokeWidth={2} activeDot={{ r: 8 }} />
-                  </LineChart>
-                </ResponsiveContainer>
+                  <ResponsiveContainer width="100%" height="100%">
+                    <AreaChart data={loginData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+                      <CartesianGrid strokeDasharray="3 3" stroke="#374151" opacity={0.1} />
+                      <XAxis dataKey="day" stroke="#6B7280" />
+                      <YAxis stroke="#6B7280" />
+                      <Tooltip
+                        contentStyle={{ backgroundColor: "#1F2937", borderColor: "#374151", color: "#F9FAFB", }}
+                        itemStyle={{ color: "#F9FAFB" }}
+                        labelStyle={{ color: "#F9FAFB" }} />
+                      <Area type="monotone" dataKey="logins" stroke="#8884d8" fill="#8884d8" fillOpacity={0.2} strokeWidth={2} activeDot={{ r: 8 }} />
+                    </AreaChart>
+                  </ResponsiveContainer>
               </div>
             </div>
 
             {/* Pie Chart - User Distribution */}
             <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-5 border border-gray-200 dark:border-gray-700">
               <div className="flex justify-between items-center mb-4">
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-white">User Distribution</h3>
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Datasets Distribution</h3>
                 <div className="p-2 bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 rounded-lg">
                   <PieChart className="h-5 w-5" />
                 </div>
@@ -392,9 +393,10 @@ const formattedTime = date.toLocaleTimeString([], {
                     <Pie
                       data={userDistribution}
                       cx="50%"
-                      cy="50%"
+                        cy="50%"
+                      innerRadius={40}
                       labelLine={false}
-                      outerRadius={80}
+                      outerRadius={60}
                       fill="#8884d8"
                       dataKey="value"
                       label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
@@ -443,16 +445,28 @@ const formattedTime = date.toLocaleTimeString([], {
                 <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-300">
                   <tr>
                     <th scope="col" className="px-6 py-3">
-                      User
+                     <div className="flex items-center">
+                          <User className="w-4 h-4 mr-1" />
+                          User
+                          </div>
                     </th>
                     <th scope="col" className="px-6 py-3">
-                      Role
+                      <div className="flex items-center">
+                          <ShieldCheck className="w-4 h-4 mr-1" />
+                          Role
+                          </div>
+                    </th>
+                      <th scope="col" className="px-6 py-3">
+                        <div className="flex items-center">
+                          <CheckCircle className="w-4 h-4 mr-1" />
+                          Status
+                          </div>
                     </th>
                     <th scope="col" className="px-6 py-3">
-                      Status
-                    </th>
-                    <th scope="col" className="px-6 py-3">
-                      Actions
+                     <div className="flex items-center">
+                          <ArrowLeftRight className="w-4 h-4 mr-1" />
+                          Action
+                          </div>
                     </th>
                   </tr>
                 </thead>

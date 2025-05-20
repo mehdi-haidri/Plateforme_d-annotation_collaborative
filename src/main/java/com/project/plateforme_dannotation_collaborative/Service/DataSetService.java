@@ -4,8 +4,10 @@ import com.project.plateforme_dannotation_collaborative.Dto.Admin.DataSetDto;
 import com.project.plateforme_dannotation_collaborative.Dto.Admin.DatasetDetailsDto;
 import com.project.plateforme_dannotation_collaborative.Dto.Admin.DatasetMinResposeDto;
 import com.project.plateforme_dannotation_collaborative.Dto.Admin.TaskDto;
+import com.project.plateforme_dannotation_collaborative.Exception.CustomhandleMethodArgumentNotValidException;
 import com.project.plateforme_dannotation_collaborative.Model.*;
 import com.project.plateforme_dannotation_collaborative.Repository.DataSetRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
@@ -14,28 +16,26 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.*;
-import java.util.ArrayList;
-
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.util.*;
 
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class DataSetService {
     private final DataSetRepository dataSetRepository;
     private final UserSevice userSevice;
     private final TextCoupleService textCoupleService;
     private  final TaskService taskService;
     private  final  FileStorageService fileStorageService;
-
-    public Dataset saveDateSet(DataSetDto dataSetDto) throws IOException {
+    @Transactional(rollbackOn = CustomhandleMethodArgumentNotValidException.class)
+    public Dataset saveDateSet(DataSetDto dataSetDto) throws IOException , CustomhandleMethodArgumentNotValidException{
 
        Dataset dataset =  dataSetRepository.save(DtoToDataseet(dataSetDto));
        dataset = parseAndSaveCsv(dataSetDto.getFile() ,dataset);
-        System.out.println("after");
-
+       System.out.println("after");
        if(!dataSetDto.getAnnotators().isEmpty()){
            saveAnnotators(dataset, dataSetDto.getAnnotators() , dataSetDto.getDatelimit());
            dataset.setAnnotated(true);
@@ -48,7 +48,16 @@ public class DataSetService {
     public  Dataset saveDateSet(Dataset dataset) {
         return  dataSetRepository.save(dataset);
     }
-    public void saveAnnotators(Dataset dataset, List<Long> annotatorsIds ,  Date datelimit) {
+    public void saveAnnotators(Dataset dataset, List<Long> annotatorsIds ,  Date datelimit)  throws CustomhandleMethodArgumentNotValidException {
+        LocalDate today = LocalDate.now();
+        LocalDate dateLimit = datelimit.toInstant()
+                .atZone(ZoneId.systemDefault())
+                .toLocalDate();
+        if(dateLimit.isBefore(today)) {
+            HashMap <String ,String> errros  = new HashMap();
+            errros.put("datelimit", "date limit not valid");
+            throw new CustomhandleMethodArgumentNotValidException(errros);
+        }
         List<Annotator> annotators = userSevice.findAllAnnotatorsById(annotatorsIds);
         List <TextCouple> textCouples = textCoupleService.getTextCouples(dataset);
         Collections.shuffle(textCouples);
@@ -179,4 +188,7 @@ public class DataSetService {
         }
 
     }
+
+
+
 }

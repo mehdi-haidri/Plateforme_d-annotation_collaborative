@@ -44,7 +44,10 @@ const Table = ({ colums, rows }) => {
             <tr>
               {colums.map((col) => (
                 <th key={col.field} scope="col" className="px-6 py-4">
-                  <div className="flex items-center gap-1">{col.field}</div>
+                  <div className="flex items-center">
+                          {col?.icon}
+                          {col.field.charAt(0).toUpperCase() + col.field.slice(1)}
+                  </div>
                 </th>
               ))}
             </tr>

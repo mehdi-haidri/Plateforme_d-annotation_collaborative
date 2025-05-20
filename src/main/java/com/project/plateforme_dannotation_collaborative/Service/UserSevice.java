@@ -82,16 +82,7 @@ public class UserSevice {
         return  annotatorRepository.findAllById(ids);
     }
 
-    public void updateUser(UserUpdateDto user) {
-        User userToUpdate =    annotatorRepository.findById(user.getId()).orElse(null);
-        userToUpdate.setFirstName(user.getFirstName());
-        userToUpdate.setLastName(user.getLastName());
-        userToUpdate.setEmail(user.getEmail());
-        if(!user.getPassword().isEmpty()){
-            userToUpdate.setPassword(encoder.encode(user.getPassword()));
-        }
-        if(userToUpdate != null) userRepository.save(userToUpdate);
-    }
+
 
     public Response verify(UserLoginDto user) {
         Authentication authentication = authManager.authenticate(new UsernamePasswordAuthenticationToken(user.getUserName(), user.getPassword()));
@@ -129,5 +120,37 @@ public class UserSevice {
         event.setUserId(userId);
         event.setLoginTime(LocalDateTime.now());
         loginEventRepository.save(event);
+    }
+
+    public User getUserById(Long userId) {
+        return userRepository.findById(userId).orElse(null);
+    }
+
+    public void save(User user) {
+        userRepository.save(user);
+    }
+
+    public void updateUser(UserUpdateDto user) throws CustomhandleMethodArgumentNotValidException {
+
+            User userToUpdate = userRepository.findById(user.getId()).orElse(null);
+            userToUpdate.setLastName(user.getLastName());
+            userToUpdate.setFirstName(user.getFirstName());
+            userToUpdate.setEmail(user.getEmail());
+            if(!user.getPassword().isEmpty()){
+                HashMap <String ,String> fieldError ;
+                if(encoder.matches(user.getPassword(), userToUpdate.getPassword())){
+                    fieldError = new HashMap<>();
+                    fieldError.put("password", "Passwords do not match");
+                    throw new CustomhandleMethodArgumentNotValidException(fieldError);
+                }else if(user.getPassword().length() < 6){
+                    fieldError = new HashMap<>();
+                    fieldError.put("password", "Password must be at least 6 characters");
+                    throw new CustomhandleMethodArgumentNotValidException(fieldError);
+                }
+                userToUpdate.setPassword(encoder.encode(user.getPassword()));
+            }
+            userRepository.save(userToUpdate);
+
+
     }
 }

@@ -140,8 +140,7 @@ function UpdateAnnotatorModal({ isOpen, onClose, annotatorId }) {
 
   return (
   <>
-      {isOpen && (
-        <>
+      
           {/* Background overlay */}
          <div
   className="fixed inset-0 bg-[#11182691] bg-opacity-50 z-40 transition-opacity duration-300 ease-in-out"
@@ -315,8 +314,8 @@ function UpdateAnnotatorModal({ isOpen, onClose, annotatorId }) {
               </div>
             </div>
           </div>
-        </>
-      )}
+        
+    
     </>
   )
 }
