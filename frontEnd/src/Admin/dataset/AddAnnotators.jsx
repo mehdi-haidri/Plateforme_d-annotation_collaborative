@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate, useOutletContext, useParams } from "react-router-dom";
 import { DayPicker } from "react-day-picker";
 import { Calendar, Users, Check, Loader2, ChevronDown, Info, Filter, Search, CheckSquare, Square } from "lucide-react"
@@ -9,7 +9,7 @@ const API_URL = import.meta.env.VITE_API_URL;
 
 const AddAnnotators = () => {
   const { setAlert } = useOutletContext()
-  const { id } = useParams()
+  const { id: datasetId} = useParams()
   const Navigate = useNavigate()
   const [selectedAnnotators, setSelectedAnnotators] = useState([])
   const [rows, setRows] = useState([])
@@ -17,6 +17,8 @@ const AddAnnotators = () => {
   const [isLoading, setIsLoading] = useState(false)
   const [searchTerm, setSearchTerm] = useState("")
   const [selectAll, setSelectAll] = useState(false)
+  const requestError = useRef(null)
+  const [validation, setValidation] = useState({})
    
   const colums = [
     {
@@ -80,7 +82,7 @@ const AddAnnotators = () => {
 
   useEffect(() => {
     fetchAnnotators();
-    console.log(id);
+
   }, []);
 
   console.log(rows)
@@ -95,10 +97,11 @@ const AddAnnotators = () => {
                   "Content-Type": "application/json",
                   'Authorization': `Bearer ${localStorage.getItem('token')}`
                 },
-                body: JSON.stringify({ datasetId: id, annotators: selectedAnnotators, datelimit: date.toISOString().split('T')[0]}),
+                body: JSON.stringify({ datasetId: datasetId , annotators: selectedAnnotators, datelimit: date.toISOString().split('T')[0]}),
             })
           if (!response.ok) {
-              console.log(response);
+            console.log(response);
+               requestError.current = response
               throw new Error('Network response was not ok');
               }
               response = await response.json();
@@ -106,7 +109,13 @@ const AddAnnotators = () => {
             setAlert({ type: "success", message: "Annotators created successfully" });
            Navigate(`${roles.ROLE_ADMIN}/datasets`);
           } catch (error) {
-            console.error(error);
+             if (requestError.current.satus == 500) {
+        setAlert({ type: "error", message: "server Error" });
+      } else if (requestError.current.status == 400 ) {
+        const response = await requestError.current.json()
+        response.data?.errorType == "validation" ? setValidation(response.data.errors) : setAlert({ type: "error", message: "Bad request" });
+        console.log(response);
+      }
           }
         setIsLoading(false);
     }
@@ -145,7 +154,7 @@ const handleSelectAll = () => {
         <div className="flex items-center text-sm text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-800 px-4 py-2 rounded-lg">
           <Info className="h-4 w-4 mr-2 text-blue-500" />
           <span>
-            Dataset ID: <span className="font-medium text-gray-900 dark:text-white">#{id}</span>
+            Dataset ID: <span className="font-medium text-gray-900 dark:text-white">#{datasetId}</span>
           </span>
         </div>
       </div>
@@ -179,10 +188,12 @@ const handleSelectAll = () => {
                   }}
                 />
                     </div>
-                
-     
-        
+              
           </div>
+          {validation?.datelimit && (<div className="inline-flex items-center px-3 py-1 text-sm font-medium text-red-700 bg-red-100 rounded-full dark:bg-red-900/30 dark:text-red-400">
+              <Check className="w-4 h-4 mr-1" />
+             {validation?.datelimit}
+          </div>)} 
           {date && (
             <div className="inline-flex items-center px-3 py-1 text-sm font-medium text-purple-700 bg-purple-100 rounded-full dark:bg-purple-900/30 dark:text-purple-400">
               <Check className="w-4 h-4 mr-1" />
@@ -190,6 +201,7 @@ const handleSelectAll = () => {
             </div>
           )}
         </div>
+        
       </div>
 
       {/* Search and filters */}

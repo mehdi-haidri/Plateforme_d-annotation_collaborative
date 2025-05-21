@@ -61,13 +61,15 @@ public class UserController {
         response.getData().put("annotators" , annotators);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
-    @GetMapping("/annotators")
-    public ResponseEntity<?> getAnnotators( ){
-        Response response  = new Response();
-        List<AnnotatorsMinResponseDto> annotators = annotatorSevice.getAllAnnotators();
+    @GetMapping("/annotators/page/{page}")
+    public ResponseEntity<?> getAnnotators( @PathVariable int page){
+
+
+        Response response = annotatorSevice.getAllAnnotators(page);
         response.setError(false);
-        response.getData().put("annotators" , annotators);
         return new ResponseEntity<>(response, HttpStatus.OK);
+
+
     }
 
     @GetMapping("/annotators/annotator/{id}")

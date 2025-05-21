@@ -1,5 +1,6 @@
 package com.project.plateforme_dannotation_collaborative.Service;
 
+import com.project.plateforme_dannotation_collaborative.Controller.Response;
 import com.project.plateforme_dannotation_collaborative.Dto.Admin.DataSetDto;
 import com.project.plateforme_dannotation_collaborative.Dto.Admin.DatasetDetailsDto;
 import com.project.plateforme_dannotation_collaborative.Dto.Admin.DatasetMinResposeDto;
@@ -12,6 +13,8 @@ import lombok.RequiredArgsConstructor;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -190,5 +193,21 @@ public class DataSetService {
     }
 
 
+    public Response getAllDatasetsByPage(int pageINdex) {
+        Response response = new Response();
+        PageRequest pageRequest = PageRequest.of(pageINdex, 6);
+        Page<Dataset> page = dataSetRepository.findAll(pageRequest);
+        int totalPages = page.getTotalPages();
+        List<DatasetMinResposeDto> datasets =  page.stream().map(dataset ->
+                        new DatasetMinResposeDto(dataset.getId()
+                                , dataset.getName()
+                                , dataset.getDescription()
+                                , dataset.getAdvancement()
+                                , dataset.getAnnotated()
+                                , dataset.getSize() , dataset.getClasses().size())).toList();
+        response.getData().put("datasets", datasets);
+        response.getData().put("totalPages", totalPages);
+        return  response;
 
+    }
 }

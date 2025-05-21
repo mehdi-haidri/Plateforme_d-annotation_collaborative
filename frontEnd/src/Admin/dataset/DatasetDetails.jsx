@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react"
 import { Link, useParams } from "react-router-dom"
 import { Database, Info, Users, Calendar, FileText, Tag, BarChart3, CheckCircle, AlertCircle } from "lucide-react"
+import roles from "../../config/roles"
 
 const API_URL = import.meta.env.VITE_API_URL
 
@@ -154,11 +155,11 @@ const DatasetDetails = () => {
                             return (
                               <td key={index} className="px-6 py-4 whitespace-nowrap">
                                 <div className="flex items-center">
-                                  <span className="mr-2">{row[col.field]}%</span>
+                                  <span className="mr-2">{(row[col.field]/row["size"] * 100).toFixed(2)}%</span>
                                   <div className="w-24 bg-gray-200 rounded-full h-2.5 dark:bg-gray-700">
                                     <div
                                       className="bg-purple-600 h-2.5 rounded-full dark:bg-purple-500"
-                                      style={{ width: `${row[col.field]}%` }}
+                                      style={{ width: `${(row[col.field]/row["size"] * 100).toFixed(2)}%` }}
                                     ></div>
                                   </div>
                                 </div>
@@ -193,7 +194,7 @@ const DatasetDetails = () => {
                         return null
                       })}
                       <td className="px-6 py-4">
-                        <Link to={`/datasets/add-annotators/${row.id}`} className="font-medium hover:underline">
+                        <Link to={`${roles.ROLE_ADMIN}/datasets/add-annotators/${row.id}`} className="font-medium hover:underline">
                           {row.status ? (
                             <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400">
                               <CheckCircle className="w-3 h-3 mr-1" />
@@ -265,12 +266,12 @@ const DatasetDetails = () => {
                           <span className="text-xs uppercase font-semibold text-gray-500 dark:text-gray-400">
                             Progress
                           </span>
-                          <span className="text-xs font-medium text-gray-900 dark:text-white">{task.advancement}%</span>
+                          <span className="text-xs font-medium text-gray-900 dark:text-white">{task.advancement.toFixed(2)}%</span>
                         </div>
                         <div className="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700">
                           <div
                             className="bg-purple-600 h-2.5 rounded-full dark:bg-purple-500"
-                            style={{ width: `${task.advancement}%` }}
+                            style={{ width: `${task.advancement.toFixed(2)}%` }}
                           ></div>
                         </div>
                       </div>

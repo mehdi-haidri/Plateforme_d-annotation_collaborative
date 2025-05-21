@@ -1,70 +1,28 @@
-"use client"
-
-import { useState, useEffect } from "react"
+import { use, useEffect, useState } from "react"
 import { useOutletContext } from "react-router-dom"
 import { User, Mail, Lock, Save, Loader2, UserCircle, BadgeCheck, AlertCircle, Eye, EyeOff } from "lucide-react"
 
 const API_URL = import.meta.env.VITE_API_URL
 
 function Profile() {
-  const { setAlert } = useOutletContext()
-  const [isLoading, setIsLoading] = useState(true)
+  const { setAlert , userData: user } = useOutletContext()
+  const [isLoading, setIsLoading] = useState(false)
   const [isSaving, setIsSaving] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
-  const [userData, setUserData] = useState({
-    firstName: "",
+  const [userData, setUserData] = useState({ firstName: "",
     lastName: "",
     email: "",
-    password: "",
-    role: "",
-  })
+    password: ""})
+
   const [errors, setErrors] = useState({
     firstName: "",
     lastName: "",
     email: "",
     password: "",
   })
-
-  // Fetch user data
-  const fetchUserData = async () => {
-    setIsLoading(true)
-    try {
-      const response = await fetch(`${API_URL}users/user`, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      })
-
-      if (!response.ok) {
-        throw new Error("Failed to fetch user data")
-      }
-
-      const data = await response.json()
-
-      console.log(data)
-      setUserData({
-        firstName: data.data?.user?.firstName || "John",
-        lastName: data.data?.user?.lastName || "Doe",
-        email: data.data?.user?.email || "john.doe@example.com",
-        password: "",
-        role: data?.data?.role?.name || "ROLE_ANNOTATOR",
-      })
-    } catch (error) {
-      console.error("Error fetching user data:", error)
-      setAlert({
-        type: "error",
-        message: "Failed to load user profile. Please try again later.",
-      })
-    } finally {
-      setIsLoading(false)
-    }
-  }
-
   useEffect(() => {
-    fetchUserData()
-  }, [])
+    user && setUserData(user)
+  }, [user])
 
   const handleInputChange = (e) => {
     const { name, value } = e.target

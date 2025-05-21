@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 @SpringBootApplication
@@ -26,16 +27,18 @@ public class PlateformeDAnnotationCollaborativeApplication implements CommandLin
     @Override
     public void run(String[] args) {
 
+        try {
+
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(12);
-        Role role1 = new Role();
+       /* Role role1 = new Role();
         role1.setName("ROLE_ADMIN");
         Role role2 = new Role();
         role2.setName("ROLE_ANNOTATOR");
         roleRepository.save(role1);
-        roleRepository.save(role2);
+        roleRepository.save(role2);*/
 
 
-        Annotator annotator1 = new Annotator();
+        /*Annotator annotator1 = new Annotator();
         annotator1.setForAnnotator("11111111");
         annotator1.setFirstName("mehdi");
         annotator1.setLastName("haidri");
@@ -71,7 +74,10 @@ public class PlateformeDAnnotationCollaborativeApplication implements CommandLin
         admin1.setEmail("admin1@gmail.com");
         admin1.setPassword(encoder.encode("1234567"));
         admin1.setRole(role1);
-        userRepository.save( admin1);
+        userRepository.save( admin1);*/
+        }catch (DataIntegrityViolationException e){
+            System.out.println("user alredy created");
+        }
     }
 
 

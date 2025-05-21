@@ -188,7 +188,7 @@ const Annotators = () => {
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
-              <thead className="text-xs font-medium text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-300">
+              <thead className="text-xs font-medium text-gray-500 uppercase bg-gray-50 dark:bg-gray-800 dark:text-gray-300">
                 <tr>
                   {columns.map((col) => (
                     <th key={col.field} scope="col" className="px-6 py-4" style={{ width: `${col.width}px` }}>
@@ -205,7 +205,7 @@ const Annotators = () => {
                   rows.map((row) => (
                     <tr
                       key={row.id}
-                      className="bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                      className="bg-white dark:bg-gray-900/50 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
                     >
                       <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
                         #{row.id}

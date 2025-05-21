@@ -1,6 +1,7 @@
 package com.project.plateforme_dannotation_collaborative.Controller;
 
 import com.project.plateforme_dannotation_collaborative.Service.DashboardService;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,6 +13,7 @@ import java.util.Map;
 @RequestMapping("/app/v1/analytics")
 @RestController
 @RequiredArgsConstructor
+@Transactional
 public class AnalyticsController {
 
 
@@ -26,7 +28,13 @@ public class AnalyticsController {
 
         @GetMapping("/dashboard")
         public ResponseEntity<?> getDasboard() {
+                try {
                 return  ResponseEntity.ok(dashboardService.getDashboardStats());
+
+                }catch (RuntimeException e){
+                        e.printStackTrace();
+                        return ResponseEntity.badRequest().body("eeeee");
+                }
         }
 
 }

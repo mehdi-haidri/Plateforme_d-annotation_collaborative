@@ -16,7 +16,8 @@ import Midlware from "../Midlware";
 import AnnotatorTaskList from "../Annotator/task/Tasks";
 import TextCouples from "../Annotator/task/TextCouples";
 import Dashboard from "../Admin/Dashboard";
-import Profile from "../Admin/components/Profile";
+import AdminProfile from "../Admin/components/Profile";
+import AnnotatorProfile from "../Annotator/Profile";
 
 
 const Routes = [
@@ -56,7 +57,7 @@ const Routes = [
             },
             {
                 path :"profile",
-                element: <Profile/>
+                element: <AdminProfile/>
 
             },
             {
@@ -86,6 +87,10 @@ const Routes = [
         path: "/annotator",
         element: <Midlware role = "ROLE_ANNOTATOR"><AnnotatorLayout /> </Midlware>,
         children: [
+            {
+                path: "",
+                element: <AnnotatorProfile/>
+            },
             {
                 path: "tasks",
                 element: <AnnotatorTaskList/>

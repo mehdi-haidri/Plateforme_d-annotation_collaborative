@@ -23,7 +23,8 @@ import {
   User,
   Info,
   ArrowLeftRight,
-  FolderCheck
+  FolderCheck,
+  AtSign
 } from "lucide-react"
 import UpdateAnnotatorModal from "./UpdateAnnotator";
 
@@ -34,8 +35,10 @@ const Annotators = () => {
   const [searchTerm, setSearchTerm] = useState("")
   const [isRefreshing, setIsRefreshing] = useState(false)
   const [activeFilter, setActiveFilter] = useState("all") // "all", "active", "inactive"
-   const [isModalOpen, setIsModalOpen] = useState(false)
+  const [isModalOpen, setIsModalOpen] = useState(false)
   const [selectedAnnotatorId, setSelectedAnnotatorId] = useState(null)
+  const [totalPages, setTotalPages] = useState(0)
+  const [currentPage, setCurrentPage] = useState(0)
    
   const columns = [
     {
@@ -54,6 +57,11 @@ const Annotators = () => {
       icon: <UserRoundSearch className="w-4 h-4 mr-1" />,
     },
     {
+      field: "email",
+      width: 130,
+      icon: <AtSign className="w-4 h-4 mr-1" />,
+    },
+    {
       field: "action",
       width: 90,
       icon: <ArrowLeftRight className="w-4 h-4 mr-1" />
@@ -68,7 +76,7 @@ const Annotators = () => {
     setIsLoading(true)
     try {
       let response = await fetch(
-        API_URL + "users/annotators",
+        API_URL + "users/annotators/page/"+currentPage,
         {
           method: "GET",
           headers: {
@@ -89,9 +97,11 @@ const Annotators = () => {
             firstName: annotator.firstName,
             lastName: annotator.lastName,
             status: annotator.state,
+            email: annotator.email
           };
-        })
+        })        
       );
+      setTotalPages(response.data?.totalPages)
     } catch (error) {
       setAlert({ type: "error", message: "Annotators not found" });
       console.error(error);
@@ -125,11 +135,12 @@ const Annotators = () => {
     }
   }
 
+
     useEffect(() => {
 
     fetchAnnotators();
    
-  }, []);
+  }, [currentPage]);
     
      const handleRefresh = async () => {
     setIsRefreshing(true)
@@ -167,6 +178,10 @@ const Annotators = () => {
   const activeAnnotators = rows.filter((row) => row.status).length
   const inactiveAnnotators = rows.filter((row) => !row.status).length
 
+  const handlePageChange = (page) => {
+    setCurrentPage(page)
+  }
+
   return (
      <div className="px-4 py-6">
       {/* Header with title and add button */}
@@ -186,7 +201,7 @@ const Annotators = () => {
 
       {/* Stats cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4 border border-gray-200 dark:border-gray-700">
+        <div className="bg-white dark:bg-gray-900/30 rounded-lg shadow p-4 border border-gray-200 dark:border-gray-700">
           <div className="flex items-center">
             <div className="p-3 rounded-full bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 mr-4">
               <Users className="h-6 w-6" />
@@ -198,7 +213,7 @@ const Annotators = () => {
           </div>
         </div>
 
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4 border border-gray-200 dark:border-gray-700">
+        <div className="bg-white dark:bg-gray-900/30 rounded-lg shadow p-4 border border-gray-200 dark:border-gray-700">
           <div className="flex items-center">
             <div className="p-3 rounded-full bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400 mr-4">
               <UserCheck className="h-6 w-6" />
@@ -210,7 +225,7 @@ const Annotators = () => {
           </div>
         </div>
 
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4 border border-gray-200 dark:border-gray-700">
+        <div className="bg-white dark:bg-gray-900/30 rounded-lg shadow p-4 border border-gray-200 dark:border-gray-700">
           <div className="flex items-center">
             <div className="p-3 rounded-full bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 mr-4">
               <UserX className="h-6 w-6" />
@@ -326,6 +341,7 @@ const Annotators = () => {
                     <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">#{row.id}</td>
                     <td className="px-6 py-4">{row.firstName}</td>
                     <td className="px-6 py-4">{row.lastName}</td>
+                    <td className="px-6 py-4">{row.email}</td>
                      <td className=" py-4">
                       <div className="flex gap-2">
                         <button
@@ -408,15 +424,21 @@ const Annotators = () => {
       {filteredRows.length > 0 && (
         <div className="flex flex-col sm:flex-row items-center justify-between mt-6 gap-4">
           <div className="text-sm text-gray-700 dark:text-gray-400">
-            Showing <span className="font-medium">{filteredRows.length}</span> of{" "}
-            <span className="font-medium">{rows.length}</span> annotators
+            Page <span className="font-medium">{currentPage + 1}</span> of{" "}
+            <span className="font-medium">{totalPages}</span> Pages
           </div>
           <div className="inline-flex gap-1">
-            <button className="inline-flex items-center justify-center px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 disabled:opacity-50 disabled:cursor-not-allowed dark:bg-gray-800 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-700">
+            <button
+              onClick={() => handlePageChange(currentPage - 1)}
+              disabled={currentPage === 0}
+              className="inline-flex items-center justify-center px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 disabled:opacity-50 disabled:cursor-not-allowed dark:bg-gray-800 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-700">
               <ChevronLeft className="w-4 h-4 mr-1" />
               Previous
             </button>
-            <button className="inline-flex items-center justify-center px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 disabled:opacity-50 disabled:cursor-not-allowed dark:bg-gray-800 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-700">
+            <button
+              onClick={() => handlePageChange(currentPage + 1)}
+              disabled={currentPage === totalPages - 1}
+              className="inline-flex items-center justify-center px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 disabled:opacity-50 disabled:cursor-not-allowed dark:bg-gray-800 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-700">
               Next
               <ChevronRight className="w-4 h-4 ml-1" />
             </button>

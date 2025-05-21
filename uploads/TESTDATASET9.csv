@@ -1,0 +1,16 @@
+id,text1,text2,label
+1,Hello world,Welcome to AI,NEGATIVE
+2,Good morning,Have a great day,POSITIVE
+3,How are you?,"I am fine, thanks!",POSITIVE
+4,What's up?,Not much,POSITIVE
+5,Nice to meet you,Pleasure is mine,POSITIVE
+6,Good night,Sweet dreams!,POSITIVE
+7,See you later,Take care!,POSITIVE
+8,Where are you?,I'm on my way,NEGATIVE
+9,Let's go,Alright,POSITIVE
+10,Thanks a lot,You're welcome,POSITIVE
+11,Is it raining?,Yes,NEGATIVE
+12,I love coding,Coding is fun!,POSITIVE
+13,Can you help?,Sure,NEGATIVE
+14,Don't worry,Everything will be fine,NEGATIVE
+15,This is amazing,Absolutely incredible!,NEGATIVE

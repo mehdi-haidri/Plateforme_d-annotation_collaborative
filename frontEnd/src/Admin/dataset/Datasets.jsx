@@ -2,7 +2,7 @@ import { useEffect,useState } from 'react'
 import Table from '../components/Table'
 import { Link } from 'react-router-dom';
 import roles from '../../config/roles';
-import { Database, Plus, Search, RefreshCw, Filter, Loader2, BarChart3, Check } from 'lucide-react'
+import { Database, FilePlus, Search, RefreshCw, Filter, Loader2, BarChart3, Check } from 'lucide-react'
 import {  Info,  Tag,  CheckCircle ,ArrowLeftRight } from "lucide-react"
 
 const   API_URL = import.meta.env.VITE_API_URL;
@@ -12,6 +12,8 @@ function Datasets() {
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [searchTerm, setSearchTerm] = useState("")
   const [isLoading, setIsLoading] = useState(false);
+  const [totalPages, setTotalPages] = useState(0);
+  const [currentPage, setCurrentPage] = useState(0);
 
     const columns = [
         {
@@ -58,7 +60,7 @@ function Datasets() {
     
     const fetchData = async () => {
         try {
-          let response = await fetch(API_URL+'datasets/datasets', {
+          let response = await fetch(API_URL+'datasets/datasets/'+currentPage, {
             method: "GET",
             headers: {
               "Content-Type": "application/json",
@@ -83,7 +85,8 @@ function Datasets() {
                 
             })
           console.log(response);
-            setRows(rows);
+          setRows(rows);
+          setTotalPages(response.data?.totalPages)
         } catch (error) {
           console.error(error);
         }
@@ -101,7 +104,9 @@ function Datasets() {
 
   useEffect(() => {
     fetchData()
-  }, [])
+  }, [currentPage])
+
+
 
   // Calculate some basic stats for the dashboard cards
   const totalDatasets = rows.length
@@ -122,7 +127,7 @@ function Datasets() {
           className="inline-flex items-center justify-center px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-lg shadow-sm hover:bg-blue-700 focus:outline-none  transition-colors"
         >
           <Link to={`${roles.ROLE_ADMIN}/datasets/addDataset`} className="flex items-center">
-            <Plus className="h-4 w-4 mr-2" />
+            <FilePlus className="h-4 w-4 mr-2" />
             Add Dataset
           </Link>
         </button>
@@ -130,7 +135,7 @@ function Datasets() {
 
       {/* Stats cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4 border border-gray-200 dark:border-gray-700">
+        <div className="bg-white dark:bg-gray-900/30 rounded-lg shadow p-4 border border-gray-200 dark:border-gray-700">
           <div className="flex items-center">
             <div className="p-3 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 mr-4">
               <Database className="h-6 w-6" />
@@ -142,7 +147,7 @@ function Datasets() {
           </div>
         </div>
 
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4 border border-gray-200 dark:border-gray-700">
+        <div className="bg-white dark:bg-gray-900/30 rounded-lg shadow p-4 border border-gray-200 dark:border-gray-700">
           <div className="flex items-center">
             <div className="p-3 rounded-full bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400 mr-4">
               <Check className="h-6 w-6" />
@@ -156,7 +161,7 @@ function Datasets() {
           </div>
         </div>
 
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4 border border-gray-200 dark:border-gray-700">
+        <div className="bg-white dark:bg-gray-900/30 rounded-lg shadow p-4 border border-gray-200 dark:border-gray-700">
           <div className="flex items-center">
             <div className="p-3 rounded-full bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 mr-4">
               <BarChart3 className="h-6 w-6" />
@@ -206,7 +211,7 @@ function Datasets() {
           <p className="text-gray-500 dark:text-gray-400">Loading datasets...</p>
         </div>
       )  : (
-        <Table rows={filteredRows} colums={columns} />
+        <Table rows={filteredRows} colums={columns} setCurrentPage={setCurrentPage} totalPages={totalPages} currentPage={currentPage} />
       )}
     </div>
   )

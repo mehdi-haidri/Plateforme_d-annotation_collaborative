@@ -59,14 +59,14 @@ public class DataSetController {
     }
 
     @PostMapping("/addAnnotators")
-    public  ResponseEntity <?> addAnnotaors(@RequestBody Annotators_DatasetDto annotatorsDatasetDto){
+    public  ResponseEntity <?> addAnnotaors(@RequestBody Annotators_DatasetDto annotatorsDatasetDto) throws CustomhandleMethodArgumentNotValidException {
         Response response = new Response();
-        try{
+
            Dataset dataset = dataSetService.getDataset(annotatorsDatasetDto.getDatasetId());
            dataSetService.saveAnnotators(dataset , annotatorsDatasetDto.getAnnotators() , annotatorsDatasetDto.getDatelimit());
-           if ( dataset == null || dataset.getAnnotated()) {
+           /*if ( dataset == null || dataset.getAnnotated()) {
                throw new Exception("Dataset cannot be annotated");
-           }
+           }*/
            dataset.setAnnotated(true);
            dataSetService.saveDateSet(dataset);
            response.setError(false);
@@ -79,11 +79,7 @@ public class DataSetController {
                    dataset.getClasses().size());
            response.getData().put("dataset", datasetMinResposeDto);
            return new ResponseEntity<>(response , HttpStatus.OK);
-        }catch (Exception e){
-            response.setError(true);
-            response.getData().put("error", "dataset cannot be annotated");
-            return new ResponseEntity<>(response , HttpStatus.BAD_REQUEST);
-        }
+
 
     }
 
@@ -92,12 +88,11 @@ public class DataSetController {
 /*
      @PreAuthorize("hasRole('ADMIN')")
 */
-    @GetMapping("/datasets")
-    public ResponseEntity <?> GetDatasets(){
-        Response response = new Response();
+    @GetMapping("/datasets/{page}")
+    public ResponseEntity <?> GetDatasets( @PathVariable int page){
+
+        Response response = dataSetService.getAllDatasetsByPage(page);
         response.setError(false);
-        List<DatasetMinResposeDto> datasets = dataSetService.getAllDatasets();
-        response.getData().put("datasets", datasets);
         return new ResponseEntity<>(response , HttpStatus.OK);
     }
 

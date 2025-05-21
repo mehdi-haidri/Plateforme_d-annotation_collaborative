@@ -84,7 +84,10 @@ public class JwtFilter extends OncePerRequestFilter {
 
        response.getWriter().write(json);
        } catch (Exception ex) {
-           response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+       response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+       response.setContentType("application/json");
+
+       // Build your JSON response manually
        String json = new ObjectMapper().writeValueAsString(Map.of(
                "error", true,
                "data", Map.of(

@@ -267,7 +267,7 @@ const formattedTime = date.toLocaleTimeString([], {
           {/* Stats Cards */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
             {/* Total Users */}
-            <div className="bg-white dark:bg-gray-900 rounded-lg shadow p-5 border border-gray-200 dark:border-gray-700">
+            <div className="bg-white dark:bg-gray-900/20 rounded-lg shadow p-5 border border-gray-200 dark:border-gray-700">
               <div className="flex justify-between">
                 <div>
                   <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Total Users</p>
@@ -290,7 +290,7 @@ const formattedTime = date.toLocaleTimeString([], {
             </div>
 
             {/* Total Datasets */}
-            <div className="bg-white dark:bg-gray-900 rounded-lg shadow p-5 border border-gray-200 dark:border-gray-700">
+            <div className="bg-white dark:bg-gray-900/20 rounded-lg shadow p-5 border border-gray-200 dark:border-gray-700">
               <div className="flex justify-between">
                 <div>
                   <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Total Datasets</p>
@@ -308,7 +308,7 @@ const formattedTime = date.toLocaleTimeString([], {
             </div>
 
             {/* Total Annotators */}
-            <div className="bg-white dark:bg-gray-900 rounded-lg shadow p-5 border border-gray-200 dark:border-gray-700">
+            <div className="bg-white dark:bg-gray-900/20 rounded-lg shadow p-5 border border-gray-200 dark:border-gray-700">
               <div className="flex justify-between">
                 <div>
                   <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Total Annotators</p>
@@ -328,7 +328,7 @@ const formattedTime = date.toLocaleTimeString([], {
             </div>
 
             {/* Total Tasks */}
-            <div className="bg-white dark:bg-gray-900 rounded-lg shadow p-5 border border-gray-200 dark:border-gray-700">
+            <div className="bg-white dark:bg-gray-900/20 rounded-lg shadow p-5 border border-gray-200 dark:border-gray-700">
               <div className="flex justify-between">
                 <div>
                   <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Total Tasks</p>
