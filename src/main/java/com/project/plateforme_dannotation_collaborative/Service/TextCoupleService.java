@@ -28,6 +28,7 @@ public class TextCoupleService {
     public List<TextCouple> getTextCouples(Dataset dataset) {
         return  textCoupleRepository.findAllByDataset(dataset);
     }
+
     public  TextCouple saveTextCouple(TextCouple textCouple) {
 
         return textCoupleRepository.save(textCouple);

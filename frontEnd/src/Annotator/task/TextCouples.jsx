@@ -152,7 +152,7 @@ function TextCouples() {
                     <FileText className="h-4 w-4 mr-1" />
                     Task Rows
                   </h3>
-                  <p className="text-sm text-gray-900 dark:text-white">{taskInfo.RowCount}</p>
+                  <p className="text-sm text-gray-900 dark:text-white">{taskInfo.rowCount}</p>
                 </div>
               </div>
             </div>

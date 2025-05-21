@@ -2,7 +2,7 @@
 import {  useState } from "react"
 import { Link, useLocation } from "react-router-dom"
 import roles from "../../config/roles"
-import { Database, } from "lucide-react"
+import { Database, LogOut} from "lucide-react"
 import LogoutModal from "./LogoutModal"
 import ThemeToggle from "./themeToggle"
 function Navbar() {
@@ -77,9 +77,10 @@ const [menuOpen, setMenuOpen] = useState(false)
             <li>
               <button
                   onClick={openLogoutModal}
-                  className="block py-2 px-3 text-gray-900 rounded-sm hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700"
+                  className="block py-2 px-3 items-center gap-2 flex text-gray-900 rounded-sm hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700"
                 >
                   Logout
+                  <LogOut className="h-4 w-4 font-semibold" />
                 </button>
             </li>
             </ul>
