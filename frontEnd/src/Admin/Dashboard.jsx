@@ -233,7 +233,7 @@ const formattedTime = date.toLocaleTimeString([], {
   )
 
   return (
-    <div className="px-4 py-6">
+    <div className="px-4 py-6 scrollbar-none">
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
         <div className="flex items-center">

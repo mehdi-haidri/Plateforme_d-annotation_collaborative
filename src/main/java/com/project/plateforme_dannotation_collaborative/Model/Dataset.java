@@ -27,11 +27,11 @@ public class Dataset {
              @JsonManagedReference
      List<Classes> classes ;
 
-     @OneToMany(mappedBy = "dataset")
+     @OneToMany(mappedBy = "dataset" , cascade = CascadeType.ALL, orphanRemoval = true)
      @JsonManagedReference
      List<Task> tasks ;
 
-     @OneToMany(mappedBy = "dataset")
+     @OneToMany(mappedBy = "dataset" , cascade = CascadeType.ALL, orphanRemoval = true)
      @JsonManagedReference
      List<TextCouple> textCouples;
 

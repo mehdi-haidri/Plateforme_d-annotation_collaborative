@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -210,6 +211,12 @@ public class DataSetService {
         response.getData().put("datasets", datasets);
         response.getData().put("totalPages", totalPages);
         return  response;
+
+    }
+
+    public void deleteDataset(Long id)  {
+
+         dataSetRepository.deleteById(id);
 
     }
 }

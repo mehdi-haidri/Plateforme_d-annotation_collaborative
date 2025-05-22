@@ -1,6 +1,7 @@
 package com.project.plateforme_dannotation_collaborative.Service;
 
 import com.project.plateforme_dannotation_collaborative.Controller.Response;
+import com.project.plateforme_dannotation_collaborative.Dto.Admin.TextCoupleDTO;
 import com.project.plateforme_dannotation_collaborative.Dto.Annotator.SaveTextCoupleDto;
 import com.project.plateforme_dannotation_collaborative.Model.Annotation;
 import com.project.plateforme_dannotation_collaborative.Model.Dataset;
@@ -81,6 +82,38 @@ public class TextCoupleService {
             System.out.println(e.getMessage());
             return false;
         }
+
+    }
+
+    public Response getTextCouplesByPage(Long datasetId, int pageIndex) {
+        PageRequest pageRequest = PageRequest.of(pageIndex, 10);
+        Page<TextCouple> page  = textCoupleRepository.findAllByDataset_Id(datasetId , pageRequest);
+
+        Response response = new Response();
+        response.setError(false);
+        int totalPages = page.getTotalPages();
+        response.getData().put("totalPages", totalPages);
+        List<TextCouple > textCouples = page.getContent();
+        List<TextCoupleDTO> textCoupleDTOS =textCouples.stream().map( t ->{
+            Boolean annotated = false;
+            String classe ="";
+            Optional <Annotation> annotationOptional = annotationRepository.findAnnotationByTextCouple(t);
+            if(annotationOptional.isPresent()){
+                annotated = true;
+                classe = annotationOptional.get().getClasse();
+            }
+            return  new TextCoupleDTO(
+                    t.getId(),
+                    t.getText1(),
+                    t.getText2(),
+                    annotated,
+                    classe
+                    );
+        }).toList();
+
+        response.getData().put("textCouples", textCoupleDTOS);
+
+        return  response ;
 
     }
 }

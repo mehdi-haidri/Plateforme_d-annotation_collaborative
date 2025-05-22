@@ -36,15 +36,11 @@ public class GlobalExeptionHandler {
     }
 
     @ExceptionHandler(DataIntegrityViolationException.class)
-    public ResponseEntity<String> handleDataIntegrityViolationException(DataIntegrityViolationException ex) {
+    public ResponseEntity<Response> handleDataIntegrityViolationException(DataIntegrityViolationException ex) {
         Throwable cause = ex.getCause();
-        if (cause instanceof ConstraintViolationException) {
-            ConstraintViolationException consEx = (ConstraintViolationException) cause;
-            if ("23505".equals(consEx.getSQLState())) {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Duplicate entry error: unique constraint violated");
-            }
-        }
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Database error occurred.");
+        Response response = new Response();
+        response.setError(true);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }
 
     @ExceptionHandler(CustomhandleMethodArgumentNotValidException.class)

@@ -12,7 +12,8 @@ import java.util.List;
 
 public interface TextCoupleRepository extends JpaRepository<TextCouple, Long> {
 
-    List<TextCouple> findAllByDataset(Dataset dataset);
 
+    List<TextCouple> findAllByDataset(Dataset dataset);
+    Page<TextCouple> findAllByDataset_Id(Long dataset_id ,PageRequest pageRequest);
     Page<TextCouple> findByTask(Task task, Pageable pageable);
 }

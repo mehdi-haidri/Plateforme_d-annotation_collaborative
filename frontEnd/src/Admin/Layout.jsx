@@ -78,6 +78,8 @@ function Layout() {
   useEffect(() => {
     if (darkMode) {
       document.documentElement.classList.add("dark")
+        document.body.classList.add('scrollbar-none');
+        document.body.classList.add('overflow-auto');
     } else {
       document.documentElement.classList.remove("dark")
     }
@@ -267,8 +269,8 @@ function Layout() {
       <LogoutModal isOpen={isLogoutModalOpen} onClose={closeLogoutModal} />
 
       {/* Main Content */}
-      <div className="p-4 sm:ml-64 min-h-screen  bg-gray-50 dark:bg-gray-900">
-        <div className="p-4 relative border border-gray-200 rounded-lg dark:border-gray-700 dark:bg-gray-800 bg-gray-50 mt-14">
+      <div className="p-4 sm:ml-64 min-h-screen  bg-gray-50 dark:bg-gray-900 scrollbar-hide scrollbar-none overflow-auto">
+        <div className="p-4 relative border border-gray-200 rounded-lg dark:border-gray-700 scrollbar-hide scrollbar-none dark:bg-gray-800 bg-gray-50 mt-14  ">
           <Outlet context={{ setAlert ,userData }} />
         </div>
       </div>

@@ -211,7 +211,7 @@ function Datasets() {
           <p className="text-gray-500 dark:text-gray-400">Loading datasets...</p>
         </div>
       )  : (
-        <Table rows={filteredRows} colums={columns} setCurrentPage={setCurrentPage} totalPages={totalPages} currentPage={currentPage} />
+        <Table rows={filteredRows} handleRefresh={handleRefresh} colums={columns} setCurrentPage={setCurrentPage} totalPages={totalPages} currentPage={currentPage} />
       )}
     </div>
   )

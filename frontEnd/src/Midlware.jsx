@@ -24,10 +24,10 @@ function Midlware({ children: next, role }) {
       } 
       return false;
     } catch (error) {
-      console.log(error);
-      if (response?.status === 401) {
+      if (response?.status == 401) {
+        console.log(response?.status);
         response = await response.json();
-        console.log(response?.data?.error);
+        console.log(response?.data?.errorType);
         setAlert({ type: "error", message: "Uanthorized" });
         localStorage.removeItem('token');
         localStorage.removeItem('role');

@@ -51,10 +51,12 @@ function AddAnnotator() {
         response.data?.errorType == "validation"
           ? setValidation(response.data.errors)
           : setAlert({ type: "error", message: "Bad request" });
-        console.log(response.data.errors);
+        console.log(response);
       }
+    }finally {
+      setIsLoading(false);
     }
-    setIsLoading(false);
+   
   };
 
   return (

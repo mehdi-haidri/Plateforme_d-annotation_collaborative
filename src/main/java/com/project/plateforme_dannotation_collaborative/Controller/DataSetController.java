@@ -8,6 +8,8 @@ import com.project.plateforme_dannotation_collaborative.Dto.Admin.*;
 import com.project.plateforme_dannotation_collaborative.Exception.CustomhandleMethodArgumentNotValidException;
 import com.project.plateforme_dannotation_collaborative.Model.Dataset;
 import com.project.plateforme_dannotation_collaborative.Service.DataSetService;
+import com.project.plateforme_dannotation_collaborative.Service.TextCoupleService;
+import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.InputStreamResource;
@@ -30,9 +32,11 @@ import java.util.List;
 @RestController
 @RequestMapping("/app/v1/datasets")
 @RequiredArgsConstructor
+@Transactional()
 public class DataSetController {
 
     private final DataSetService dataSetService;
+    private final TextCoupleService textCoupleService;
 
     @PostMapping("/addDataset")
     public ResponseEntity <?> AddDataSet( @Valid @ModelAttribute DatasetRequestDto dataSetRequestDto) throws CustomhandleMethodArgumentNotValidException {
@@ -118,5 +122,19 @@ public class DataSetController {
                 .contentType(MediaType.parseMediaType("text/csv"))
                 .contentLength(file.length())
                 .body(resource);
+    }
+
+
+    @GetMapping("/dataset/{id}/textCouples/{page}")
+    public ResponseEntity <?> getTextCoupels(@PathVariable int page , @PathVariable Long id){
+        Response response = textCoupleService.getTextCouplesByPage(id , page);
+        return  new ResponseEntity<>(response , HttpStatus.OK);
+
+    }
+
+    @DeleteMapping("/dataset/{id}")
+    public ResponseEntity<?> deleteDataset(@PathVariable Long id){
+        dataSetService.deleteDataset(id);
+        return  ResponseEntity.ok("Dataset deleted successfully");
     }
 }

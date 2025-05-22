@@ -25,7 +25,7 @@ public class TextCouple {
             @JsonBackReference
     Task task ;
 
-    @OneToOne(mappedBy = "textCouple")
+    @OneToOne(mappedBy = "textCouple" , cascade = CascadeType.ALL, orphanRemoval = true )
             @JsonManagedReference
     Annotation annotation;
     }

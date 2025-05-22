@@ -95,6 +95,7 @@ public class JwtFilter extends OncePerRequestFilter {
                        "error", ex.getMessage()
                )
        ));
+       response.getWriter().write(json);
        }
     }
 }
