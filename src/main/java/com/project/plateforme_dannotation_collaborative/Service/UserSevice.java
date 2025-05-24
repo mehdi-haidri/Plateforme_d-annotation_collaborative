@@ -22,6 +22,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
@@ -64,7 +65,18 @@ public class UserSevice {
         }
         return null;
     }
-    public User saveUser(UserDto userDto) throws CustomhandleMethodArgumentNotValidException {
+    public String saveUser(UserDto userDto) throws CustomhandleMethodArgumentNotValidException {
+        String password ;
+        if(userDto.getPassword().isEmpty()){
+            password =generateRandomPassword(10) ;
+        }else {
+            if(userDto.getPassword().length() < 8){
+                HashMap<String ,String> fieldError = new HashMap<>();
+                fieldError.put("password", "password must be at least 8 characters");
+                throw new CustomhandleMethodArgumentNotValidException(fieldError);
+            }
+            password = userDto.getPassword();
+        }
 
        if( userRepository.findByEmail(userDto.getEmail()).isPresent()){
            HashMap<String ,String> fieldError = new HashMap<>();
@@ -72,12 +84,11 @@ public class UserSevice {
            throw new CustomhandleMethodArgumentNotValidException(fieldError);
        }
         User user = DToToUser(userDto);
-        user.setPassword(encoder.encode(user.getPassword()));
-
-        return userRepository.save(user);
+        user.setPassword(encoder.encode(password));
+        userRepository.save(user);
+        return password;
 
     }
-
     public List<Annotator>  findAllAnnotatorsById(List<Long> ids) {
         return  annotatorRepository.findAllById(ids);
     }
@@ -153,4 +164,18 @@ public class UserSevice {
 
 
     }
+
+    public String generateRandomPassword(int length) {
+        String chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$";
+        StringBuilder password = new StringBuilder();
+        SecureRandom random = new SecureRandom();
+
+        for (int i = 0; i < length; i++) {
+            password.append(chars.charAt(random.nextInt(chars.length())));
+        }
+        return password.toString();
+    }
 }
+
+
+

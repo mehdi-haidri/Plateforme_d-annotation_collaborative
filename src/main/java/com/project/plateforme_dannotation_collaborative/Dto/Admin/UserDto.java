@@ -23,7 +23,6 @@ public class UserDto {
     @Email
     @NotBlank
     String email;
-    @Length(min = 5, max = 20)
     String password ;
     @NotBlank
     String role;

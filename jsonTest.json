@@ -1,0 +1,22 @@
+[
+  {
+    "text1": "Hello",
+    "text2": "Bonjour"
+  },
+  {
+    "text1": "Goodbye",
+    "text2": "Au revoir"
+  },
+  {
+    "text1": "Thank you",
+    "text2": "Merci"
+  },
+  {
+    "text1": "Yes",
+    "text2": "Oui"
+  },
+  {
+    "text1": "No",
+    "text2": "Non"
+  }
+]

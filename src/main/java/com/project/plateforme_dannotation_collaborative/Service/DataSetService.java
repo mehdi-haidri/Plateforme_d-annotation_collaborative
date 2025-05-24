@@ -1,5 +1,7 @@
 package com.project.plateforme_dannotation_collaborative.Service;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.project.plateforme_dannotation_collaborative.Controller.Response;
 import com.project.plateforme_dannotation_collaborative.Dto.Admin.DataSetDto;
 import com.project.plateforme_dannotation_collaborative.Dto.Admin.DatasetDetailsDto;
@@ -23,6 +25,7 @@ import java.io.*;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.*;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -34,11 +37,27 @@ public class DataSetService {
     private final TextCoupleService textCoupleService;
     private  final TaskService taskService;
     private  final  FileStorageService fileStorageService;
+
+
     @Transactional(rollbackOn = CustomhandleMethodArgumentNotValidException.class)
     public Dataset saveDateSet(DataSetDto dataSetDto) throws IOException , CustomhandleMethodArgumentNotValidException{
 
-       Dataset dataset =  dataSetRepository.save(DtoToDataseet(dataSetDto));
-       dataset = parseAndSaveCsv(dataSetDto.getFile() ,dataset);
+        if (dataSetDto.getClasses().isEmpty() || dataSetDto.getClasses().size() < 2){
+            HashMap<String ,String> errors = new HashMap<>();
+            errors.put("classes", "class should in the form of A;B;... ");
+            throw new CustomhandleMethodArgumentNotValidException(errors);
+        }
+        Dataset dataset =  dataSetRepository.save(DtoToDataseet(dataSetDto));
+        System.out.println(dataSetDto.getFile().getOriginalFilename());
+        if(dataSetDto.getFile().getOriginalFilename().endsWith(".csv")){
+           dataset = parseAndSaveCsvIndex(dataSetDto.getFile() ,dataset);
+        }else if(dataSetDto.getFile().getOriginalFilename().endsWith(".json")){
+            dataset  = parseAndSaveJson(dataSetDto.getFile() ,dataset);
+        }else {
+            HashMap<String ,String> errors = new HashMap<>();
+            errors.put("file", "Only CSV and Json file allowed");
+            throw new CustomhandleMethodArgumentNotValidException(errors);
+        }
        System.out.println("after");
        if(!dataSetDto.getAnnotators().isEmpty()){
            saveAnnotators(dataset, dataSetDto.getAnnotators() , dataSetDto.getDatelimit());
@@ -52,6 +71,8 @@ public class DataSetService {
     public  Dataset saveDateSet(Dataset dataset) {
         return  dataSetRepository.save(dataset);
     }
+
+
     public void saveAnnotators(Dataset dataset, List<Long> annotatorsIds ,  Date datelimit)  throws CustomhandleMethodArgumentNotValidException {
         LocalDate today = LocalDate.now();
         LocalDate dateLimit = datelimit.toInstant()
@@ -98,7 +119,7 @@ public class DataSetService {
         return dataset;
     }
 
-    public Dataset parseAndSaveCsv(MultipartFile file  ,Dataset dataset) throws IOException {
+    public Dataset parseAndSaveCsvName(MultipartFile file  ,Dataset dataset) throws IOException {
 
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(file.getInputStream()));
              CSVParser csvParser = new CSVParser(reader, CSVFormat.DEFAULT.withFirstRecordAsHeader().withTrim())) {
@@ -117,6 +138,63 @@ public class DataSetService {
         }
 
         return  dataset;
+    }
+
+    public Dataset parseAndSaveCsvIndex(MultipartFile file, Dataset dataset) throws IOException {
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(file.getInputStream()));
+             CSVParser csvParser = new CSVParser(reader, CSVFormat.DEFAULT.withTrim())) {
+
+            int size = 0;
+
+            boolean isFirstRow = true;
+            for (CSVRecord csvRecord : csvParser) {
+                // Assuming index 1 is text1 and index 2 is text2 (0-based indexing)
+
+                if (csvRecord.size() < 3) continue; // Skip if the row doesn't have enough columns
+                if (isFirstRow) {
+                    isFirstRow = false;
+                    continue;
+                }
+                String text1 = csvRecord.get(1); // 2nd column
+                String text2 = csvRecord.get(2); // 3rd column
+
+                TextCouple line = new TextCouple();
+                line.setText1(text1);
+                line.setText2(text2);
+                line.setDataset(dataset);
+                textCoupleService.saveTextCouple(line);
+
+                size++;
+            }
+
+            dataset.setSize(size);
+        }
+
+        return dataset;
+    }
+
+    public Dataset parseAndSaveJson(MultipartFile file, Dataset dataset) throws IOException {
+        ObjectMapper objectMapper = new ObjectMapper();
+        int size = 0;
+
+        // Read the JSON array from the file
+        JsonNode rootNode = objectMapper.readTree(file.getInputStream());
+        if (rootNode.isArray()) {
+            for (JsonNode node : rootNode) {
+                String text1 = node.get("text1").asText();
+                String text2 = node.get("text2").asText();
+
+                TextCouple line = new TextCouple();
+                line.setText1(text1);
+                line.setText2(text2);
+                line.setDataset(dataset);
+                textCoupleService.saveTextCouple(line);
+                size++;
+            }
+        }
+
+        dataset.setSize(size);
+        return dataset;
     }
 
     public Dataset getDataset(Long id){

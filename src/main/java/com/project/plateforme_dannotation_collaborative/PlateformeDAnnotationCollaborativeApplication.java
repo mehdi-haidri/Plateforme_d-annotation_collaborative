@@ -27,18 +27,18 @@ public class PlateformeDAnnotationCollaborativeApplication implements CommandLin
     @Override
     public void run(String[] args) {
 
-        try {
+      /*  try {
 
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(12);
-       /* Role role1 = new Role();
+        Role role1 = new Role();
         role1.setName("ROLE_ADMIN");
         Role role2 = new Role();
         role2.setName("ROLE_ANNOTATOR");
         roleRepository.save(role1);
-        roleRepository.save(role2);*/
+        roleRepository.save(role2);
 
 
-        /*Annotator annotator1 = new Annotator();
+        Annotator annotator1 = new Annotator();
         annotator1.setForAnnotator("11111111");
         annotator1.setFirstName("mehdi");
         annotator1.setLastName("haidri");
@@ -64,6 +64,7 @@ public class PlateformeDAnnotationCollaborativeApplication implements CommandLin
         annotator3.setFirstName("morad");
         annotator3.setLastName("l7aj");
         annotator3.setEmail("33@dddd.com");
+        annotator3.setPassword(encoder.encode("1234567"));
         annotator3.setState(true);
         annotator3.setRole(role2);
         userRepository.save( annotator3);
@@ -74,10 +75,10 @@ public class PlateformeDAnnotationCollaborativeApplication implements CommandLin
         admin1.setEmail("admin1@gmail.com");
         admin1.setPassword(encoder.encode("1234567"));
         admin1.setRole(role1);
-        userRepository.save( admin1);*/
+        userRepository.save( admin1);
         }catch (DataIntegrityViolationException e){
             System.out.println("user alredy created");
-        }
+        }*/
     }
 
 

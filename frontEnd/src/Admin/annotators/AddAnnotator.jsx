@@ -1,4 +1,4 @@
-import { User } from "lucide-react";
+import { Mail, User ,Lock } from "lucide-react";
 import { useRef, useState } from "react";
 import { useNavigate, useOutletContext } from "react-router-dom";
 
@@ -15,15 +15,14 @@ function AddAnnotator() {
   const requestError = useRef({});
   const [isLoading, setIsLoading] = useState(false);
 
-
   const handleSubmit = async () => {
     setIsLoading(true);
     try {
-      let response = await fetch(API_URL+"users/addUser", {
+      let response = await fetch(API_URL + "users/addUser", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "Authorization": `Bearer ${localStorage.getItem('token')}`
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
         body: JSON.stringify({
           firstName,
@@ -41,7 +40,12 @@ function AddAnnotator() {
       }
       response = await response.json();
       console.log(response);
-      setAlert({ type: "success", message: "Annotator created successfully" });
+      setAlert({
+        type: "success",
+        message:
+          "Annotator created successfully with password : " +
+          response?.data?.password,
+      });
       Navigate(`/admin/annotators`);
     } catch (error) {
       if (requestError.satus == 500) {
@@ -53,21 +57,23 @@ function AddAnnotator() {
           : setAlert({ type: "error", message: "Bad request" });
         console.log(response);
       }
-    }finally {
+    } finally {
       setIsLoading(false);
     }
-   
   };
 
   return (
     <div className="px-4 py-6">
       <div className=" mb-6">
-        <div className="flex items-center"> 
-
-        <User className="h-8 w-8 text-purple-600 mr-3" />
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">New Annotator</h1>
+        <div className="flex items-center">
+          <User className="h-8 w-8 text-purple-600 mr-3" />
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+            New Annotator
+          </h1>
         </div>
-        <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">Add a new annotator to your team</p>
+        <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+          Add a new annotator to your team
+        </p>
       </div>
 
       {/* {successMessage && (
@@ -84,89 +90,135 @@ function AddAnnotator() {
           <form onSubmit={(e) => e.preventDefault()} className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <label htmlFor="firstName" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                <label
+                  htmlFor="firstName"
+                  className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                >
                   First Name
                 </label>
-                <input
-                  value={firstName}
-                  onChange={(e) => setFirstName(e.target.value)}
-                  type="text"
-                  id="firstName"
-                  placeholder="Enter first name"
-                  className={`block w-full p-2.5 text-sm text-gray-900 bg-gray-50 rounded-lg border ${
-                    validation?.firstName ? "border-red-500" : "border-gray-300"
-                  } focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500`}
-                />
-                {validation?.firstName && (
-                  <p className="mt-1 text-sm text-red-600 dark:text-red-500">{validation.firstName}</p>
-                )}
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                    <User className="h-4 w-4 text-gray-400" />
+                  </div>
+                  <input
+                    value={firstName}
+                    onChange={(e) => setFirstName(e.target.value)}
+                    type="text"
+                    id="firstName"
+                    placeholder="Enter first name"
+                    className={`block w-full p-2.5 text-sm text-gray-900 bg-gray-50 rounded-lg border ${
+                      validation?.firstName
+                        ? "border-red-500"
+                        : "border-gray-300"
+                    } focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700  pl-10 p-2.5 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500`}
+                  />
+                  {validation?.firstName && (
+                    <p className="mt-1 text-sm text-red-600 dark:text-red-500">
+                      {validation.firstName}
+                    </p>
+                  )}
+                </div>
               </div>
 
               <div>
-                <label htmlFor="lastName" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                <label
+                  htmlFor="lastName"
+                  className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                >
                   Last Name
                 </label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                    <User className="h-4 w-4 text-gray-400" />
+                  </div>
+                  <input
+                    value={lastName}
+                    onChange={(e) => setLastName(e.target.value)}
+                    type="text"
+                    id="lastName"
+                    placeholder="Enter last name"
+                    className={`block w-full p-2.5 text-sm text-gray-900 bg-gray-50 rounded-lg border ${
+                      validation?.lastName
+                        ? "border-red-500"
+                        : "border-gray-300"
+                    } focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700  pl-10 p-2.5 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500`}
+                  />
+                  {validation?.lastName && (
+                    <p className="mt-1 text-sm text-red-600 dark:text-red-500">
+                      {validation.lastName}
+                    </p>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <label
+                htmlFor="email"
+                className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+              >
+                Email
+              </label>
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                  <Mail className="h-4 w-4 text-gray-400" />
+                </div>
                 <input
-                  value={lastName}
-                  onChange={(e) => setLastName(e.target.value)}
-                  type="text"
-                  id="lastName"
-                  placeholder="Enter last name"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  type="email"
+                  id="email"
+                  placeholder="name@company.com"
                   className={`block w-full p-2.5 text-sm text-gray-900 bg-gray-50 rounded-lg border ${
-                    validation?.lastName ? "border-red-500" : "border-gray-300"
-                  } focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500`}
+                    validation?.email ? "border-red-500" : "border-gray-300"
+                  } focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 pl-10 p-2.5 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500`}
                 />
-                {validation?.lastName && (
-                  <p className="mt-1 text-sm text-red-600 dark:text-red-500">{validation.lastName}</p>
+                {validation?.email && (
+                  <p className="mt-1 text-sm text-red-600 dark:text-red-500">
+                    {validation.email}
+                  </p>
                 )}
               </div>
             </div>
 
             <div>
-              <label htmlFor="email" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-                Email
+              <label
+                htmlFor="password"
+                className="block mb-2 text-sm font-medium text-gray-900 dark:text-gray-300"
+              >
+                Password ( leave blank for generated password )
               </label>
-              <input
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                type="email"
-                id="email"
-                placeholder="name@company.com"
-                className={`block w-full p-2.5 text-sm text-gray-900 bg-gray-50 rounded-lg border ${
-                  validation?.email ? "border-red-500" : "border-gray-300"
-                } focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500`}
-              />
-              {validation?.email && <p className="mt-1 text-sm text-red-600 dark:text-red-500">{validation.email}</p>}
-            </div>
-
-            <div>
-              <label htmlFor="password" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-                Password
-              </label>
-              <input
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                type="password"
-                id="password"
-                placeholder="••••••••"
-                className={`block w-full p-2.5 text-sm text-gray-900 bg-gray-50 rounded-lg border ${
-                  validation?.password ? "border-red-500" : "border-gray-300"
-                } focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500`}
-              />
-              {validation?.password && (
-                <p className="mt-1 text-sm text-red-600 dark:text-red-500">{validation.password}</p>
-              )}
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                  <Lock className="h-4 w-4 text-gray-400" />
+                </div>
+                <input
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  type="password"
+                  id="password"
+                  placeholder="••••••••"
+                  className={`block w-full p-2.5 text-sm text-gray-900 bg-gray-50 rounded-lg border ${
+                    validation?.password ? "border-red-500" : "border-gray-300"
+                  } focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700  pl-10 p-2.5 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500`}
+                />
+                {validation?.password && (
+                  <p className="mt-1 text-sm text-red-600 dark:text-red-500">
+                    {validation.password}
+                  </p>
+                )}
+              </div>
             </div>
 
             <div className="flex items-center justify-end">
               <button
                 type="button"
                 onClick={() => {
-                  setFirstName("")
-                  setLastName("")
-                  setEmail("")
-                  setPassword("")
-                  setValidation({})
+                  setFirstName("");
+                  setLastName("");
+                  setEmail("");
+                  setPassword("");
+                  setValidation({});
                 }}
                 className="text-gray-700 bg-gray-100 hover:bg-gray-200 focus:ring-4 focus:outline-none focus:ring-gray-100 font-medium rounded-lg text-sm px-5 py-2.5 me-2 shadow-sm transition-all duration-200 dark:bg-gray-800/60 dark:text-gray-300 dark:hover:bg-gray-800 dark:focus:ring-gray-700"
               >

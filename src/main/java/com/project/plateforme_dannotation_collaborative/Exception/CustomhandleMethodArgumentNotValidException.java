@@ -6,7 +6,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 
 import java.util.HashMap;
 
-public class CustomhandleMethodArgumentNotValidException extends Exception {
+public class CustomhandleMethodArgumentNotValidException extends  RuntimeException {
 
     private  HashMap <String  , String> fieldError;
     public CustomhandleMethodArgumentNotValidException(HashMap <String ,String> fieldError) {

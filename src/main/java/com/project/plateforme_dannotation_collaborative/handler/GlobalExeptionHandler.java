@@ -9,6 +9,8 @@ import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.validation.FieldError;
 
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -44,7 +46,7 @@ public class GlobalExeptionHandler {
     }
 
     @ExceptionHandler(CustomhandleMethodArgumentNotValidException.class)
-    public ResponseEntity<?> customHandleMethodArgumentNotValidException(CustomhandleMethodArgumentNotValidException ex) {
+    public ResponseEntity<?> HandleMethodArgumentNotValidException(CustomhandleMethodArgumentNotValidException ex) {
        Response response = new Response();
        response.setError(true);
         response.getData().put("errorType" , "validation");
@@ -53,11 +55,20 @@ public class GlobalExeptionHandler {
     }
 
     @ExceptionHandler(CustomeJwtValidityException.class)
-    public  ResponseEntity<?> customeJwtValidityException(CustomeJwtValidityException ex) {
+    public  ResponseEntity<?> HandleJwtValidityException(CustomeJwtValidityException ex) {
         Response response = new Response();
         response.setError(true);
         response.getData().put("errorType" , "auth");
         response.getData().put("error" , ex.getMessage());
+        return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
+    }
+
+    @ExceptionHandler(AuthenticationException.class)
+    public ResponseEntity<?> HandleAuthenticationException(AuthenticationException ex) {
+        Response response = new Response();
+        response.setError(true);
+        response.getData().put("errorType" , "auth");
+        response.getData().put("error" , "user Not Found");
         return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
     }
 }

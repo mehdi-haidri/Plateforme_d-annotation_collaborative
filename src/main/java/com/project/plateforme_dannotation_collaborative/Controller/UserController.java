@@ -33,14 +33,12 @@ public class UserController {
     @PostMapping("/addUser")
     public ResponseEntity<?> addUser(@Valid @RequestBody UserDto user) throws CustomhandleMethodArgumentNotValidException {
 
-        Response response  = new Response();
-
-             userSevice.saveUser(user);
-
-            response.setError(false);
-            response.getData().put("message" , "added successfully");
+           Response response  = new Response();
+           String password = userSevice.saveUser(user);
+           response.setError(false);
+           response.getData().put("password" , password);
+        System.out.println(password);
         return new ResponseEntity<>(response, HttpStatus.OK);
-
     }
 
     @PostMapping("/annotator/update")
@@ -85,7 +83,6 @@ public class UserController {
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody UserLoginDto user) {
         Response response = userSevice.verify(user);
-
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 

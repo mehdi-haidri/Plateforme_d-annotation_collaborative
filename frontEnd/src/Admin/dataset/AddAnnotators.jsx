@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate, useOutletContext, useParams } from "react-router-dom";
 import { DayPicker } from "react-day-picker";
-import { Calendar, Users, Check, Loader2, ChevronDown, Info, Filter, Search, CheckSquare, Square } from "lucide-react"
+import { Calendar, Users, Check, Loader2, ChevronDown, Info, Filter, Search, CheckSquare, Square ,XIcon } from "lucide-react"
 import {   CheckCircle ,ArrowLeftRight  , User ,AtSign} from "lucide-react"
 import roles from "../../config/roles";
 
@@ -191,7 +191,7 @@ const handleSelectAll = () => {
               
           </div>
           {validation?.datelimit && (<div className="inline-flex items-center px-3 py-1 text-sm font-medium text-red-700 bg-red-100 rounded-full dark:bg-red-900/30 dark:text-red-400">
-              <Check className="w-4 h-4 mr-1" />
+              <XIcon className="w-4 h-4 mr-1" />
              {validation?.datelimit}
           </div>)} 
           {date && (

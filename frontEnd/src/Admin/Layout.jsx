@@ -226,9 +226,7 @@ function Layout() {
               >
                 <Database className="shrink-0 w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" />
                 <span className="flex-1 ms-3 whitespace-nowrap">Datasets</span>
-                <span className="inline-flex items-center justify-center px-2 ms-3 text-sm font-medium text-purple-800 bg-purple-100 rounded-full dark:bg-purple-900/30 dark:text-purple-300">
-                  Pro
-                </span>
+                
               </Link>
             </li>
             <li>

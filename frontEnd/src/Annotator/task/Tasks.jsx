@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react"
-import { Link, useOutletContext } from "react-router-dom"
+import { useEffect, useState } from "react";
+import { Link, useOutletContext } from "react-router-dom";
 import {
   RefreshCw,
   Loader2,
@@ -12,19 +12,17 @@ import {
   FileText,
   BarChart3,
   AlertTriangle,
-} from "lucide-react"
-import roles from "../../config/roles"
-import { se } from "react-day-picker/locale"
+  CalendarOff,
+} from "lucide-react";
+import roles from "../../config/roles";
 
-const API_URL = import.meta.env.VITE_API_URL
-
+const API_URL = import.meta.env.VITE_API_URL;
 
 const Annotators = () => {
-    const { setAlert } = useOutletContext()
-  const [rows, setRows] = useState([])
-  const [isLoading, setIsLoading] = useState(true)
+  const { setAlert } = useOutletContext();
+  const [rows, setRows] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
-
 
   const columns = [
     {
@@ -66,57 +64,73 @@ const Annotators = () => {
       field: "action",
       width: 90,
     },
-  ]
+  ];
+
+  const checkdayDifference = (RowlimitDate) => {
+const now = new Date();
+const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+
+const limitDateParts = RowlimitDate.split('-'); // ['2025', '05', '22']
+const limitDate = new Date(
+  parseInt(limitDateParts[0]),       // year
+  parseInt(limitDateParts[1]) - 1,   // month (0-based in JS)
+  parseInt(limitDateParts[2])        // day
+);
+
+const diffMs = limitDate - today;
+const diffDays = diffMs / (1000 * 60 * 60 * 24);
+console.log(diffDays);
+if (diffDays >= 2) {
+  return false
+    }
+    return true
+  };
 
   const fetchTasks = async () => {
     try {
-      setIsLoading(true)
-      setIsRefreshing(true)
-      let response = await fetch(
-        API_URL + "annotator/tasks",
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            'Authorization': `Bearer ${localStorage.getItem('token')}`
-          }
-        }
-      );
+      setIsLoading(true);
+      setIsRefreshing(true);
+      let response = await fetch(API_URL + "annotator/tasks", {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
       if (!response.ok) {
         throw new Error("Network response was not ok");
       }
-        response = await response.json();
-        console.log(response);
-      setRows(response?.data?.tasks)
-       
+      response = await response.json();
+      console.log(response);
+      setRows(response?.data?.tasks);
     } catch (error) {
       setAlert({ type: "error", message: "server Error" });
       console.error(error);
     } finally {
-      setIsLoading(false)
-      setIsRefreshing(false)
+      setIsLoading(false);
+      setIsRefreshing(false);
     }
   };
 
-    useEffect(() => {
-      
+  useEffect(() => {
     fetchTasks();
-   
   }, []);
-    
-    const totalTasks = rows.length
-  const completedTasks = rows.filter((task) => task.advancement === 100).length
-  const pendingTasks = rows.filter((task) => task.advancement < 100).length
+
+  const totalTasks = rows.length;
+  const completedTasks = rows.filter((task) => task.advancement === 100).length;
+  const pendingTasks = rows.filter((task) => task.advancement < 100).length;
 
   return (
-   <div className="px-4 py-6">
+    <div className="px-4 py-6">
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
         <div className="flex items-center">
           <div className="p-2 bg-purple-100 rounded-lg dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 mr-3">
             <CheckSquare className="h-6 w-6" />
           </div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">My Tasks</h1>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+            My Tasks
+          </h1>
         </div>
         <button
           onClick={() => fetchTasks()}
@@ -145,8 +159,12 @@ const Annotators = () => {
               <Database className="h-6 w-6" />
             </div>
             <div>
-              <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Total Tasks</p>
-              <p className="text-2xl font-semibold text-gray-900 dark:text-white">{totalTasks}</p>
+              <p className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                Total Tasks
+              </p>
+              <p className="text-2xl font-semibold text-gray-900 dark:text-white">
+                {totalTasks}
+              </p>
             </div>
           </div>
         </div>
@@ -157,8 +175,12 @@ const Annotators = () => {
               <CheckSquare className="h-6 w-6" />
             </div>
             <div>
-              <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Completed</p>
-              <p className="text-2xl font-semibold text-gray-900 dark:text-white">{completedTasks}</p>
+              <p className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                Completed
+              </p>
+              <p className="text-2xl font-semibold text-gray-900 dark:text-white">
+                {completedTasks}
+              </p>
             </div>
           </div>
         </div>
@@ -169,8 +191,12 @@ const Annotators = () => {
               <Clock className="h-6 w-6" />
             </div>
             <div>
-              <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Pending</p>
-              <p className="text-2xl font-semibold text-gray-900 dark:text-white">{pendingTasks}</p>
+              <p className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                Pending
+              </p>
+              <p className="text-2xl font-semibold text-gray-900 dark:text-white">
+                {pendingTasks}
+              </p>
             </div>
           </div>
         </div>
@@ -182,7 +208,9 @@ const Annotators = () => {
           <div className="flex items-center justify-center h-64">
             <div className="flex flex-col items-center">
               <Loader2 className="w-10 h-10 text-purple-600 animate-spin mb-4" />
-              <p className="text-gray-500 dark:text-gray-400">Loading tasks...</p>
+              <p className="text-gray-500 dark:text-gray-400">
+                Loading tasks...
+              </p>
             </div>
           </div>
         ) : (
@@ -191,7 +219,12 @@ const Annotators = () => {
               <thead className="text-xs font-medium text-gray-500 uppercase bg-gray-50 dark:bg-gray-800 dark:text-gray-300">
                 <tr>
                   {columns.map((col) => (
-                    <th key={col.field} scope="col" className="px-6 py-4" style={{ width: `${col.width}px` }}>
+                    <th
+                      key={col.field}
+                      scope="col"
+                      className="px-6 py-4"
+                      style={{ width: `${col.width}px` }}
+                    >
                       <div className="flex items-center">
                         {col.icon && col.icon}
                         {col.field.charAt(0).toUpperCase() + col.field.slice(1)}
@@ -212,7 +245,9 @@ const Annotators = () => {
                       </td>
                       <td className="px-6 py-4 font-medium">{row.dataset}</td>
                       <td className="px-6 py-4">{row.description}</td>
-                      <td className="px-6 py-4 whitespace-nowrap">{row.rowCount} items</td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        {row.rowCount} items
+                      </td>
                       <td className="px-6 py-4">
                         <div className="flex items-center">
                           <div className="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700 mr-2">
@@ -225,18 +260,22 @@ const Annotators = () => {
                               style={{ width: `${row.advancement}%` }}
                             ></div>
                           </div>
-                          <span className="text-sm font-medium">{row.advancement.toFixed(2)}%</span>
+                          <span className="text-sm font-medium">
+                            {row.advancement.toFixed(2)}%
+                          </span>
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="inline-flex items-center text-gray-500 dark:text-gray-400">
+                        <div className="inline-flex items-center px-3 py-1 text-sm font-medium text-purple-700 bg-purple-100 rounded-full dark:bg-purple-900/30 dark:text-purple-400">
                           <Calendar className="w-4 h-4 mr-1 text-gray-400" />
                           {row.startDate}
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="inline-flex items-center text-gray-500 dark:text-gray-400">
-                          <Calendar className="w-4 h-4 mr-1 text-gray-400" />
+                        <div className={`inline-flex items-center px-3 py-1 text-sm font-medium
+                           ${ checkdayDifference(row.limitDate) ? "text-red-700 bg-red-100 dark:bg-red-900/30 dark:text-red-400" : "text-amber-700 bg-amber-100 dark:bg-amber-900/30 dark:text-amber-400" } 
+                           rounded-full `}>
+                          <CalendarOff className="w-4 h-4 mr-1 text-gray-400" />
                           {row.limitDate}
                         </div>
                       </td>
@@ -256,10 +295,15 @@ const Annotators = () => {
                   ))
                 ) : (
                   <tr className="bg-white dark:bg-gray-800">
-                    <td colSpan={columns.length} className="px-6 py-12 text-center">
+                    <td
+                      colSpan={columns.length}
+                      className="px-6 py-12 text-center"
+                    >
                       <div className="flex flex-col items-center justify-center">
                         <AlertTriangle className="w-10 h-10 text-gray-300 dark:text-gray-600 mb-4" />
-                        <p className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-1">No tasks found</p>
+                        <p className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-1">
+                          No tasks found
+                        </p>
                         <p className="text-gray-500 dark:text-gray-400">
                           You don't have any assigned tasks at the moment.
                         </p>

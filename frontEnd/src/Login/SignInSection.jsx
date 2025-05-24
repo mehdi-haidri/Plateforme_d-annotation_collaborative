@@ -1,7 +1,8 @@
-import { useEffect, useState } from "react"
-import { useNavigate } from "react-router-dom"
+import { useContext, useEffect, useState } from "react"
+import { useNavigate, useOutletContext } from "react-router-dom"
 import { Loader2, Lock, Mail, LogIn } from "lucide-react"
 import roles from "../config/roles"
+import { AlertContext } from "../App"
 
 const API_URL = import.meta.env.VITE_API_URL
 
@@ -10,6 +11,7 @@ const SignInSection = () => {
   const [password, setPassword] = useState("1234567")
   const navigate = useNavigate()
   const [isLoading, setIsLoading] = useState(false)
+  const { setAlert } = useContext(AlertContext)
 
   const handleLogin = async (e) => {
     e.preventDefault()
@@ -28,6 +30,7 @@ const SignInSection = () => {
         localStorage.setItem("role", data?.data.role)
         navigate(roles[data?.data.role])
       } else {
+        setAlert({ type: "error", message: "Login failed" })
         console.log("Login failed")
       }
     } catch (error) {

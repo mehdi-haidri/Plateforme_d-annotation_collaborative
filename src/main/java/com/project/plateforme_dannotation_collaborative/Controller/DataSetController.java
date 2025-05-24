@@ -32,7 +32,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/app/v1/datasets")
 @RequiredArgsConstructor
-@Transactional()
+@Transactional
 public class DataSetController {
 
     private final DataSetService dataSetService;
@@ -58,7 +58,7 @@ public class DataSetController {
         }catch (IOException e){
            response.setError(true);
            response.getData().put("error", e.getMessage());
-           return new ResponseEntity<>(response , HttpStatus.INTERNAL_SERVER_ERROR);
+           return new ResponseEntity<>(response , HttpStatus.BAD_REQUEST);
         }
     }
 
