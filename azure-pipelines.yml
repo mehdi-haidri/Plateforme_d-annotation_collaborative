@@ -28,7 +28,7 @@ steps:
       options: '-DskipTests'
       publishJUnitResults: false
       javaHomeOption: 'JDKVersion'
-      jdkVersionOption: '1.17'
+      jdkVersionOption: '17'         # <-- changed from '1.17' to '17'
       mavenVersionOption: 'Default'
 
   # Publish the generated JAR as build artifact
