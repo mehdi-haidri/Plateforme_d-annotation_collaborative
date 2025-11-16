@@ -10,7 +10,7 @@ steps:
     inputs:
       versionSpec: '17'
       jdkArchitectureOption: 'x64'
-      jdkSourceOption: 'AzurePipeline'
+      jdkSourceOption: 'preinstalled'
 
   # Cache Maven dependencies (optional but recommended)
   - task: Cache@2
