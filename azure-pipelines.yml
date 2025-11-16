@@ -12,6 +12,11 @@ steps:
       restoreKeys: |
         maven | "$(Agent.OS)"
       path: ~/.m2/repository
+  
+  
+  - script: |
+    echo "##vso[task.setvariable variable=JAVA_HOME]/usr/lib/jvm/java-17-openjdk-amd64"
+    displayName: 'Set JAVA_HOME'
 
   # Build the Spring Boot app using system-installed Java 17
   - task: Maven@4
