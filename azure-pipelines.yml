@@ -6,7 +6,7 @@ pool:
 
 steps:
   # Ensure Maven local repo exists
-  - script: mkdir -p ~/.m2/repository
+  - script: mkdir -p /home/azureagent/.m2/repository
     displayName: 'Ensure Maven local repo exists'
 
   # Cache Maven dependencies
