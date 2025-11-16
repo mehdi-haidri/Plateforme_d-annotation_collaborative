@@ -17,12 +17,16 @@ steps:
         maven | "$(Agent.OS)"
       path: /home/azureagent/.m2/repository
 
-  # Build Spring Boot directly with system Java
-  - script: |
-      export JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
-      export PATH=$JAVA_HOME/bin:$PATH
-      mvn clean package -DskipTests
-    displayName: 'Build Spring Boot with Maven'
+  # Build Spring Boot with Maven using system-installed Java 17
+  - task: Maven@4
+    inputs:
+      mavenPomFile: 'pom.xml'
+      goals: 'clean package'
+      options: '-DskipTests'
+      publishJUnitResults: false
+      javaHomeOption: 'JDKPath'
+      jdkUserInputPath: '/usr/lib/jvm/java-17-openjdk-amd64'  # system-installed Java 17
+      mavenVersionOption: 'Default'
 
   # Publish build artifact
   - task: PublishBuildArtifacts@1
