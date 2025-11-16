@@ -5,14 +5,7 @@ pool:
   name: 'Default'
 
 steps:
-  # Install Java 17 automatically
-  - task: JavaToolInstaller@0
-    inputs:
-      versionSpec: '17'
-      jdkArchitectureOption: 'x64'
-      jdkSourceOption: 'AzurePipeline'
-
-  # Cache Maven dependencies (optional but speeds up builds)
+  # Cache Maven dependencies
   - task: Cache@2
     inputs:
       key: 'maven | "$(Agent.OS)" | **/pom.xml'
@@ -20,15 +13,15 @@ steps:
         maven | "$(Agent.OS)"
       path: ~/.m2/repository
 
-  # Build the Spring Boot app
+  # Build the Spring Boot app using system-installed Java 17
   - task: Maven@4
     inputs:
       mavenPomFile: 'pom.xml'
       goals: 'clean package'
       options: '-DskipTests'
       publishJUnitResults: false
-      javaHomeOption: 'JDKVersion'
-      jdkVersionOption: '17'
+      javaHomeOption: 'JDKPath'
+      jdkPath: '/usr/lib/jvm/java-17-openjdk-amd64'  # system-installed Java 17
       mavenVersionOption: 'Default'
 
   # Publish the generated JAR as build artifact
