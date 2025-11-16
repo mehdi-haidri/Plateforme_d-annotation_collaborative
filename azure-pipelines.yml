@@ -12,21 +12,20 @@ steps:
       restoreKeys: |
         maven | "$(Agent.OS)"
       path: ~/.m2/repository
-  
-  
+
+  # Set JAVA_HOME for Maven
   - script: |
-    echo "##vso[task.setvariable variable=JAVA_HOME]/usr/lib/jvm/java-17-openjdk-amd64"
+      echo "##vso[task.setvariable variable=JAVA_HOME]/usr/lib/jvm/java-17-openjdk-amd64"
     displayName: 'Set JAVA_HOME'
 
-  # Build the Spring Boot app using system-installed Java 17
+  # Build the Spring Boot app using JAVA_HOME
   - task: Maven@4
     inputs:
       mavenPomFile: 'pom.xml'
       goals: 'clean package'
       options: '-DskipTests'
       publishJUnitResults: false
-      javaHomeOption: 'JDKPath'
-      jdkPath: '/usr/lib/jvm/java-17-openjdk-amd64'  # system-installed Java 17
+      javaHomeOption: 'EnvironmentVariable'   # <-- use JAVA_HOME
       mavenVersionOption: 'Default'
 
   # Publish the generated JAR as build artifact
