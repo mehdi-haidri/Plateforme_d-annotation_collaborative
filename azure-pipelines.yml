@@ -6,11 +6,11 @@ pool:
 
 steps:
   # Install Java 17
-  - task: JavaToolInstaller@1
-    inputs:
-      versionSpec: '17'
-      jdkArchitectureOption: 'x64'
-      jdkSourceOption: 'preinstalled'
+  # - task: JavaToolInstaller@1
+  #   inputs:
+  #     versionSpec: '17'
+  #     jdkArchitectureOption: 'x64'
+  #     jdkSourceOption: 'preinstalled'
 
   # Cache Maven dependencies (optional but recommended)
   - task: Cache@2
@@ -29,7 +29,8 @@ steps:
       publishJUnitResults: false
       javaHomeOption: 'JDKVersion'
       jdkVersionOption: '17'         # <-- changed from '1.17' to '17'
-      mavenVersionOption: 'Default'
+      mavenVersionOption: 'Default'*
+      jdkPath: '/usr/lib/jvm/java-17-openjdk-amd64'
 
   # Publish the generated JAR as build artifact
   - task: PublishBuildArtifacts@1
