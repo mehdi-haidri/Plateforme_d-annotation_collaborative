@@ -5,6 +5,10 @@ pool:
   name: 'Default'
 
 steps:
+  # Ensure Maven local repo exists
+  - script: mkdir -p ~/.m2/repository
+    displayName: 'Ensure Maven local repo exists'
+
   # Cache Maven dependencies
   - task: Cache@2
     inputs:
