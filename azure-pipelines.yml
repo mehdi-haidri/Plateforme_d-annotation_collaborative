@@ -13,22 +13,22 @@ steps:
         maven | "$(Agent.OS)"
       path: ~/.m2/repository
 
-  # Set JAVA_HOME for Maven
+  # Set JAVA_HOME correctly
   - script: |
       echo "##vso[task.setvariable variable=JAVA_HOME]/usr/lib/jvm/java-17-openjdk-amd64"
     displayName: 'Set JAVA_HOME'
 
-  # Build the Spring Boot app using JAVA_HOME
+  # Build Spring Boot using JAVA_HOME
   - task: Maven@4
     inputs:
       mavenPomFile: 'pom.xml'
       goals: 'clean package'
       options: '-DskipTests'
       publishJUnitResults: false
-      javaHomeOption: 'EnvironmentVariable'   # <-- use JAVA_HOME
+      javaHomeOption: 'EnvironmentVariable'   # <-- use the JAVA_HOME variable
       mavenVersionOption: 'Default'
 
-  # Publish the generated JAR as build artifact
+  # Publish the generated JAR
   - task: PublishBuildArtifacts@1
     inputs:
       pathToPublish: 'target'
