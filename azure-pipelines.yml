@@ -15,7 +15,7 @@ steps:
       key: 'maven | "$(Agent.OS)" | **/pom.xml'
       restoreKeys: |
         maven | "$(Agent.OS)"
-      path: ~/.m2/repository
+      path: /home/azureagent/.m2/repository
 
   # Build Spring Boot directly with system Java
   - script: |
