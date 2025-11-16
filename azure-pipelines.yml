@@ -5,14 +5,14 @@ pool:
   name: 'Default'
 
 steps:
-  # Install Java 17
-  # - task: JavaToolInstaller@1
-  #   inputs:
-  #     versionSpec: '17'
-  #     jdkArchitectureOption: 'x64'
-  #     jdkSourceOption: 'preinstalled'
+  # Install Java 17 automatically
+  - task: JavaToolInstaller@0
+    inputs:
+      versionSpec: '17'
+      jdkArchitectureOption: 'x64'
+      jdkSourceOption: 'AzurePipeline'
 
-  # Cache Maven dependencies (optional but recommended)
+  # Cache Maven dependencies (optional but speeds up builds)
   - task: Cache@2
     inputs:
       key: 'maven | "$(Agent.OS)" | **/pom.xml'
@@ -28,9 +28,8 @@ steps:
       options: '-DskipTests'
       publishJUnitResults: false
       javaHomeOption: 'JDKVersion'
-      jdkVersionOption: '17'         # <-- changed from '1.17' to '17'
-      mavenVersionOption: 'Default'*
-      jdkPath: '/usr/lib/jvm/java-17-openjdk-amd64'
+      jdkVersionOption: '17'
+      mavenVersionOption: 'Default'
 
   # Publish the generated JAR as build artifact
   - task: PublishBuildArtifacts@1
