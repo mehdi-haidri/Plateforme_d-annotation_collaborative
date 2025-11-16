@@ -13,19 +13,14 @@ steps:
         maven | "$(Agent.OS)"
       path: ~/.m2/repository
 
-  # Set JAVA_HOME correctly
+  # Build Spring Boot directly with system Java
+  - script: |
+      export JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
+      export PATH=$JAVA_HOME/bin:$PATH
+      mvn clean package -DskipTests
+    displayName: 'Build Spring Boot with Maven'
 
-  # Build Spring Boot using JAVA_HOME
-  - task: Maven@4
-    inputs:
-      mavenPomFile: 'pom.xml'
-      goals: 'clean package'
-      options: '-DskipTests'
-      publishJUnitResults: false
-      javaHomeOption: 'EnvironmentVariable'   # <-- use the JAVA_HOME variable
-      mavenVersionOption: 'Default'
-
-  # Publish the generated JAR
+  # Publish build artifact
   - task: PublishBuildArtifacts@1
     inputs:
       pathToPublish: 'target'
