@@ -2,12 +2,14 @@ trigger:
   - main
 
 pool:
-  name: 'Default'
+  name: 'Default' # Keeping the user-specified self-hosted agent pool
 
 steps:
   # ------------------------------------------
   # BACKEND: SPRING BOOT BUILD (MAVEN + JAVA17)
   # ------------------------------------------
+
+  # Ensure Java is available and correct (Assuming Java 17 is in your agent's PATH or provided location)
 
   - script: mkdir -p /home/azureagent/.m2/repository
     displayName: 'Ensure Maven local repo exists'
@@ -17,50 +19,73 @@ steps:
       key: 'maven | "$(Agent.OS)" | **/pom.xml'
       restoreKeys: |
         maven | "$(Agent.OS)"
-      path: /home/azureagent/.m2/repository
+      # Using the path specified for your self-hosted agent
+      path: /home/azureagent/.m2/repository 
+    displayName: 'Cache Maven Dependencies'
 
   - task: Maven@4
+    displayName: 'Build Spring Boot App'
     inputs:
       mavenPomFile: 'pom.xml'
       goals: 'clean package'
       options: '-DskipTests'
       publishJUnitResults: false
       javaHomeOption: 'JDKPath'
-      jdkUserInputPath: '/usr/lib/jvm/java-17-openjdk-amd64'
+      # Reverting to your original path, assuming it is correct on your 'Default' agent
+      jdkUserInputPath: '/usr/lib/jvm/java-17-openjdk-amd64' 
       mavenVersionOption: 'Default'
-    displayName: 'Build Spring Boot App'
 
   - task: PublishBuildArtifacts@1
+    displayName: 'Publish Backend Artifact'
     inputs:
       pathToPublish: 'target'
       artifactName: 'springboot-artifact'
       publishLocation: 'Container'
-    displayName: 'Publish Backend Artifact'
 
+  ## 🧹 Backend Deployment with Cleanup
+  
+  # 1. GUARANTEED CLEANUP: Explicitly clear the target directory before deployment.
+  # *** IMPORTANT: REPLACE <BackendResourceGroupName> with the actual Resource Group name ***
+  - task: AzureCLI@2
+    displayName: 'Clear DataAnnotationBackEnd Content'
+    inputs:
+      azureSubscription: 'Azure for Students(dc2c23ce-59ad-4542-b897-cc7d38679c6e)'
+      scriptType: 'bash'
+      scriptLocation: 'inlineScript'
+      inlineScript: |
+        echo "Clearing /home/site/wwwroot on DataAnnotationBackEnd..."
+        # Deletes all files in the deployment root for Linux Web Apps
+        az webapp ssh -n DataAnnotationBackEnd -g tes2 --startup-command "rm -rf /home/site/wwwroot/*"
+        echo "Old content cleared."
+
+  # 2. Deploy the new content using clean 'zipDeploy'
   - task: AzureWebApp@1
+    displayName: 'Deploy Backend'
     inputs:
       azureSubscription: 'Azure for Students(dc2c23ce-59ad-4542-b897-cc7d38679c6e)'
       appType: 'webAppLinux'
       appName: 'DataAnnotationBackEnd'
       package: '$(System.DefaultWorkingDirectory)/target/*.jar'
       runtimeStack: 'JAVA|17-java17'
+      deploymentMethod: 'zipDeploy' # Best practice for clean deployments
+
 
   # ------------------------------------------
   # FRONTEND: REACT BUILD
   # ------------------------------------------
 
+  - task: NodeTool@0
+    displayName: 'Install Node.js 22.x' # Updated to 22.x to match the deploy runtime stack
+    inputs:
+      versionSpec: '22.x'
+
   - task: Cache@2
+    displayName: 'Cache Node Modules'
     inputs:
       key: 'npm | "$(Agent.OS)" | frontEnd/package-lock.json'
       restoreKeys: |
         npm | "$(Agent.OS)"
       path: frontEnd/node_modules
-    displayName: 'Cache Node Modules'
-
-  - task: NodeTool@0
-    inputs:
-      versionSpec: '20.x'
-    displayName: 'Install Node.js'
 
   - script: |
       cd frontEnd
@@ -69,21 +94,35 @@ steps:
     displayName: 'Install & Build React App'
 
   - task: PublishBuildArtifacts@1
+    displayName: 'Publish Frontend Artifact'
     inputs:
-      pathToPublish: 'frontEnd/dist'   # change to frontEnd/build if CRA
+      pathToPublish: 'frontEnd/dist'
       artifactName: 'react-artifact'
       publishLocation: 'Container'
-    displayName: 'Publish Frontend Artifact'
-  
+
+  ## 🌐 Frontend Deployment with Cleanup
+
+  # 1. GUARANTEED CLEANUP: Explicitly clear the target directory before deployment.
+  # *** IMPORTANT: REPLACE <FrontendResourceGroupName> with the actual Resource Group name ***
+  - task: AzureCLI@2
+    displayName: 'Clear DataAnnotationFrontEnd Content'
+    inputs:
+      azureSubscription: 'Azure for Students(dc2c23ce-59ad-4542-b897-cc7d38679c6e)'
+      scriptType: 'bash'
+      scriptLocation: 'inlineScript'
+      inlineScript: |
+        echo "Clearing /home/site/wwwroot on DataAnnotationFrontEnd..."
+        # Deletes all files in the deployment root for Linux Web Apps
+        az webapp ssh -n DataAnnotationFrontEnd -g tes2 --startup-command "rm -rf /home/site/wwwroot/*"
+        echo "Old content cleared."
+
+  # 2. Deploy the new content using clean 'zipDeploy'
   - task: AzureWebApp@1
+    displayName: 'Deploy React Frontend'
     inputs:
       azureSubscription: 'Azure for Students(dc2c23ce-59ad-4542-b897-cc7d38679c6e)'
       appType: 'webAppLinux'
       appName: 'DataAnnotationFrontEnd'
       package: '$(System.DefaultWorkingDirectory)/frontEnd/dist'
       runtimeStack: 'NODE|22-lts'
-    displayName: 'Deploy React Frontend'
-    
-
-  
-
+      deploymentMethod: 'zipDeploy'
