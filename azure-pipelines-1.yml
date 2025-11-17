@@ -76,7 +76,7 @@ steps:
 - task: ArchiveFiles@2
   displayName: 'Zip Frontend Artifact'
   inputs:
-    rootFolderOrFile: 'frontEnd/build'  # CRA uses 'build'
+    rootFolderOrFile: 'frontEnd/dist'
     includeRootFolder: false
     archiveType: 'zip'
     archiveFile: '$(Build.ArtifactStagingDirectory)/frontend.zip'
@@ -91,3 +91,4 @@ steps:
     package: '$(Build.ArtifactStagingDirectory)/frontend.zip'
     runtimeStack: 'NODE|22-lts'
     deploymentMethod: 'zipDeploy'
+    startupCommand: 'pm2 serve /home/site/wwwroot --no-daemon --spa'
