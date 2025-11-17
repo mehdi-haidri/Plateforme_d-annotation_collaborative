@@ -5,7 +5,7 @@ import { Home, Database, Users, LogOut, Sun, Moon, Menu, Settings, CreditCard, L
 import roles from "../config/roles"
 import { AlertContext } from "../App"
 import LogoutModal from "../Annotator/Components/LogoutModal"
-import ThemeToggle from "../Annotator/Components/themeToggle"
+import ThemeToggle from "../Annotator/Components/ThemeToggle"
 
 const API_URL = import.meta.env.VITE_API_URL
 
