@@ -27,7 +27,7 @@ public class PlateformeDAnnotationCollaborativeApplication implements CommandLin
     @Override
     public void run(String[] args) {
 
-      /*  try {
+       try {
 
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(12);
         Role role1 = new Role();
@@ -78,7 +78,7 @@ public class PlateformeDAnnotationCollaborativeApplication implements CommandLin
         userRepository.save( admin1);
         }catch (DataIntegrityViolationException e){
             System.out.println("user alredy created");
-        }*/
+        }
     }
 
 
