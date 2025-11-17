@@ -18,7 +18,6 @@ steps:
       restoreKeys: |
         maven | "$(Agent.OS)"
       path: /home/azureagent/.m2/repository
-    displayName: 'Cache Maven'
 
   - task: Maven@4
     inputs:
@@ -37,6 +36,14 @@ steps:
       artifactName: 'springboot-artifact'
       publishLocation: 'Container'
     displayName: 'Publish Backend Artifact'
+
+  - task: AzureWebApp@1
+    inputs:
+      azureSubscription: 'Azure for Students(dc2c23ce-59ad-4542-b897-cc7d38679c6e)'
+      appType: 'webAppLinux'
+      appName: 'DataAnnotationBackEnd'
+      package: '$(System.DefaultWorkingDirectory)/target/*.jar'
+      runtimeStack: 'JAVA|17-java17'
 
   # ------------------------------------------
   # FRONTEND: REACT BUILD
@@ -67,3 +74,16 @@ steps:
       artifactName: 'react-artifact'
       publishLocation: 'Container'
     displayName: 'Publish Frontend Artifact'
+  
+  - task: AzureWebApp@1
+    inputs:
+      azureSubscription: 'Azure for Students(dc2c23ce-59ad-4542-b897-cc7d38679c6e)'
+      appType: 'webAppLinux'
+      appName: 'DataAnnotationFrontEnd'
+      package: '$(System.DefaultWorkingDirectory)/frontEnd/dist'
+      runtimeStack: 'NODE|22-lts'
+    displayName: 'Deploy React Frontend'
+    
+
+  
+
