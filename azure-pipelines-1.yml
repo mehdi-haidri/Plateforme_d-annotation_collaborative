@@ -1,0 +1,69 @@
+trigger:
+  - main
+
+pool:
+  name: 'Default'
+
+steps:
+  # ------------------------------------------
+  # BACKEND: SPRING BOOT BUILD (MAVEN + JAVA17)
+  # ------------------------------------------
+
+  - script: mkdir -p /home/azureagent/.m2/repository
+    displayName: 'Ensure Maven local repo exists'
+
+  - task: Cache@2
+    inputs:
+      key: 'maven | "$(Agent.OS)" | **/pom.xml'
+      restoreKeys: |
+        maven | "$(Agent.OS)"
+      path: /home/azureagent/.m2/repository
+    displayName: 'Cache Maven'
+
+  - task: Maven@4
+    inputs:
+      mavenPomFile: 'pom.xml'
+      goals: 'clean package'
+      options: '-DskipTests'
+      publishJUnitResults: false
+      javaHomeOption: 'JDKPath'
+      jdkUserInputPath: '/usr/lib/jvm/java-17-openjdk-amd64'
+      mavenVersionOption: 'Default'
+    displayName: 'Build Spring Boot App'
+
+  - task: PublishBuildArtifacts@1
+    inputs:
+      pathToPublish: 'target'
+      artifactName: 'springboot-artifact'
+      publishLocation: 'Container'
+    displayName: 'Publish Backend Artifact'
+
+  # ------------------------------------------
+  # FRONTEND: REACT BUILD
+  # ------------------------------------------
+
+  - task: Cache@2
+    inputs:
+      key: 'npm | "$(Agent.OS)" | frontEnd/package-lock.json'
+      restoreKeys: |
+        npm | "$(Agent.OS)"
+      path: frontEnd/node_modules
+    displayName: 'Cache Node Modules'
+
+  - task: NodeTool@0
+    inputs:
+      versionSpec: '20.x'
+    displayName: 'Install Node.js'
+
+  - script: |
+      cd frontEnd
+      npm install
+      npm run build
+    displayName: 'Install & Build React App'
+
+  - task: PublishBuildArtifacts@1
+    inputs:
+      pathToPublish: 'frontEnd/dist'   # change to frontEnd/build if CRA
+      artifactName: 'react-artifact'
+      publishLocation: 'Container'
+    displayName: 'Publish Frontend Artifact'
