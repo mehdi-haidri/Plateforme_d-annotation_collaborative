@@ -4,7 +4,7 @@ import { Link, useLocation } from "react-router-dom"
 import roles from "../../config/roles"
 import { Database, LogOut} from "lucide-react"
 import LogoutModal from "./LogoutModal"
-import ThemeToggle from "./themeToggle"
+import ThemeToggle from "./ThemeToggle"
 function Navbar() {
 const [menuOpen, setMenuOpen] = useState(false)
   const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false)
