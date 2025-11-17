@@ -11,6 +11,9 @@ steps:
 - script: mkdir -p /home/azureagent/.m2/repository
   displayName: 'Ensure Maven local repo exists'
 
+- script: sudo apt-get update && sudo apt-get install -y zip
+  displayName: 'Install zip utility'
+
 - task: Cache@2
   inputs:
     key: 'maven | "$(Agent.OS)" | **/pom.xml'
