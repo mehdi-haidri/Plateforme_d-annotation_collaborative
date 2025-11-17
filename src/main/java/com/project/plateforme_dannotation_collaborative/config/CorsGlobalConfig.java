@@ -11,7 +11,7 @@ public class CorsGlobalConfig {
     @Bean
     public CorsFilter corsFilter() {
         CorsConfiguration config = new CorsConfiguration();
-        config.addAllowedOrigin("https://dataannotationbackend.azurewebsites.net");
+        config.addAllowedOrigin("https://dataannotationfrontend.azurewebsites.net");
         config.addAllowedHeader("*");
         config.addAllowedMethod("*");
         config.setAllowCredentials(true);
