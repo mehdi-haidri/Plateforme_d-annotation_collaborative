@@ -96,42 +96,42 @@ steps:
 # ------------------------------------------
 # FRONTEND: REACT BUILD
 # ------------------------------------------
-# - task: NodeTool@0
-#   displayName: 'Install Node.js 22.x'
-#   inputs:
-#     versionSpec: '22.x'
+- task: NodeTool@0
+  displayName: 'Install Node.js 22.x'
+  inputs:
+    versionSpec: '22.x'
 
-# - task: Cache@2
-#   displayName: 'Cache Node Modules'
-#   inputs:
-#     key: 'npm | "$(Agent.OS)" | frontEnd/package-lock.json'
-#     restoreKeys: |
-#       npm | "$(Agent.OS)"
-#     path: frontEnd/node_modules
+- task: Cache@2
+  displayName: 'Cache Node Modules'
+  inputs:
+    key: 'npm | "$(Agent.OS)" | frontEnd/package-lock.json'
+    restoreKeys: |
+      npm | "$(Agent.OS)"
+    path: frontEnd/node_modules
 
-# - script: |
-#     cd frontEnd
-#     npm install
-#     npm run build
-#   displayName: 'Install & Build React App'
+- script: |
+    cd frontEnd
+    npm install
+    npm run build
+  displayName: 'Install & Build React App'
 
-# # Zip frontend build
-# - task: ArchiveFiles@2
-#   displayName: 'Zip Frontend Artifact'
-#   inputs:
-#     rootFolderOrFile: 'frontEnd/dist'
-#     includeRootFolder: false
-#     archiveType: 'zip'
-#     archiveFile: '$(Build.ArtifactStagingDirectory)/frontend.zip'
-#     replaceExistingArchive: true
+# Zip frontend build
+- task: ArchiveFiles@2
+  displayName: 'Zip Frontend Artifact'
+  inputs:
+    rootFolderOrFile: 'frontEnd/dist'
+    includeRootFolder: false
+    archiveType: 'zip'
+    archiveFile: '$(Build.ArtifactStagingDirectory)/frontend.zip'
+    replaceExistingArchive: true
 
-# - task: AzureWebApp@1
-#   displayName: 'Deploy React Frontend'
-#   inputs:
-#     azureSubscription: 'Azure for Students(dc2c23ce-59ad-4542-b897-cc7d38679c6e)'
-#     appType: 'webAppLinux'
-#     appName: 'DataAnnotationFrontEnd'
-#     package: '$(Build.ArtifactStagingDirectory)/frontend.zip'
-#     runtimeStack: 'NODE|22-lts'
-#     deploymentMethod: 'zipDeploy'
-#     startupCommand: 'pm2 serve /home/site/wwwroot --no-daemon --spa'
+- task: AzureWebApp@1
+  displayName: 'Deploy React Frontend'
+  inputs:
+    azureSubscription: 'Azure for Students(dc2c23ce-59ad-4542-b897-cc7d38679c6e)'
+    appType: 'webAppLinux'
+    appName: 'DataAnnotationFrontEnd'
+    package: '$(Build.ArtifactStagingDirectory)/frontend.zip'
+    runtimeStack: 'NODE|22-lts'
+    deploymentMethod: 'zipDeploy'
+    startupCommand: 'pm2 serve /home/site/wwwroot --no-daemon --spa'
