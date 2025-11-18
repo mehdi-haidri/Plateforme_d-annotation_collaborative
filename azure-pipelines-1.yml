@@ -60,16 +60,30 @@ steps:
     command: login
     containerRegistry: dockerhub
 
-
-  # Build Docker Image
-- script: |
-    docker build -t elmahdidevops/cloudproject:latest .
+- task: Docker@2
   displayName: 'Build Docker Image'
+  inputs:
+    command: build
+    repository: elmahdidevops/cloudproject
+    dockerfile: '**/Dockerfile'
+    tags: latest
 
-  # Push Docker Image to Docker Hub
-- script: |
-    docker push elmahdidevops/cloudproject:latest
-  displayName: 'Push Docker Image to Docker Hub'
+  # Push Docker image
+- task: Docker@2
+  displayName: 'Push Docker Image'
+  inputs:
+    command: push
+    repository: elmahdidevops/cloudproject
+    tags: latest
+  # Build Docker Image
+# - script: |
+#     docker build -t elmahdidevops/cloudproject:latest .
+#   displayName: 'Build Docker Image'
+
+#   # Push Docker Image to Docker Hub
+# - script: |
+#     docker push elmahdidevops/cloudproject:latest
+#   displayName: 'Push Docker Image to Docker Hub'
 
 
 # ------------------------------------------
