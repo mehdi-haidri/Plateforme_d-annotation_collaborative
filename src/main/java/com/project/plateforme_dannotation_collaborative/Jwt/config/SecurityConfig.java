@@ -36,7 +36,7 @@ public class SecurityConfig {
 
         return http.csrf(customizer -> customizer.disable()).cors(Customizer.withDefaults()).
                 authorizeHttpRequests(request -> request
-                        .requestMatchers("/app/v1/users/login" ,"/app/v1/users/register" , "/h2-console/**").permitAll()
+                        .requestMatchers("/app/v1/users/login" ,"/app/v1/users/register" , "/h2-console/**","/health").permitAll()
                         .anyRequest().authenticated())
                 .headers(headers -> headers
                 .frameOptions(frameOptions -> frameOptions.sameOrigin())) // ✅ Allow frames from same origin (for H2 console)).
