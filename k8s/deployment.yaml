@@ -31,3 +31,4 @@ spec:
     - port: 80          # external service port
       targetPort: 8080    # internal container port
   type: LoadBalancer
+  loadBalancerIP: 10.0.134.86
