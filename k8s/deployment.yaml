@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: myapp-deployment
+  namespace: microservices
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: myapp       # FIXED MATCH
+  template:
+    metadata:
+      labels:
+        app: myapp     # MUST MATCH SELECTOR
+    spec:
+      containers:
+        - name: myapp
+          image: elmahdidevops/cloudproject:latest
+          ports:
+            - containerPort: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: myapp-service
+  namespace: microservices
+spec:
+  selector:
+    app: myapp
+  ports:
+    - port: 80          # external service port
+      targetPort: 8080    # internal container port
+  type: LoadBalancer
