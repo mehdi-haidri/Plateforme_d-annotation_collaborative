@@ -75,15 +75,22 @@ steps:
     command: push
     repository: elmahdidevops/cloudproject
     tags: latest
-  # Build Docker Image
-# - script: |
-#     docker build -t elmahdidevops/cloudproject:latest .
-#   displayName: 'Build Docker Image'
 
-#   # Push Docker Image to Docker Hub
-# - script: |
-#     docker push elmahdidevops/cloudproject:latest
-#   displayName: 'Push Docker Image to Docker Hub'
+- task: Kubernetes@1
+  inputs:
+    connectionType: 'Azure Resource Manager'
+    azureSubscriptionEndpoint: 'Azure for Students(dc2c23ce-59ad-4542-b897-cc7d38679c6e)'
+    azureResourceGroup: 'tes2'
+    kubernetesCluster: 'mycluster'
+    namespace: 'app'
+    command: 'apply'
+    useConfigurationFile: true
+    configuration: 'k8s'
+    secretType: 'dockerRegistry'
+    containerRegistryType: 'Container Registry'
+    dockerRegistryEndpoint: 'dockerhub'
+    forceUpdate: false
+
 
 
 # ------------------------------------------
