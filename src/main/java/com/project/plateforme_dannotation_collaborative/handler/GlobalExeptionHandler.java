@@ -68,7 +68,7 @@ public class GlobalExeptionHandler {
         Response response = new Response();
         response.setError(true);
         response.getData().put("errorType" , "auth");
-        response.getData().put("error" , "user Not Found");
+        response.getData().put("error" , "user Nott Found");
         return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
     }
 }
