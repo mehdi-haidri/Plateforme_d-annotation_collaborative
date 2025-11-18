@@ -31,14 +31,14 @@ steps:
     mavenVersionOption: 'Default'
 
 # Zip backend artifact
-- task: ArchiveFiles@2
-  displayName: 'Zip Backend Artifact'
-  inputs:
-    rootFolderOrFile: 'target'
-    includeRootFolder: false
-    archiveType: 'zip'
-    archiveFile: '$(Build.ArtifactStagingDirectory)/backend.zip'
-    replaceExistingArchive: true
+# - task: ArchiveFiles@2
+#   displayName: 'Zip Backend Artifact'
+#   inputs:
+#     rootFolderOrFile: 'target'
+#     includeRootFolder: false
+#     archiveType: 'zip'
+#     archiveFile: '$(Build.ArtifactStagingDirectory)/backend.zip'
+#     replaceExistingArchive: true
 
 # - task: AzureWebApp@1
 #   displayName: 'Deploy Backend'
@@ -63,12 +63,12 @@ steps:
 
   # Build Docker Image
 - script: |
-    docker build -t elmahdidevops/CloudProject:latest .
+    docker build -t elmahdidevops/cloudproject:latest .
   displayName: 'Build Docker Image'
 
   # Push Docker Image to Docker Hub
 - script: |
-    docker push elmahdidevops/CloudProject:latest
+    docker push elmahdidevops/cloudproject:latest
   displayName: 'Push Docker Image to Docker Hub'
 
 
