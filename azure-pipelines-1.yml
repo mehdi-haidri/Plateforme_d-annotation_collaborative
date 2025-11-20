@@ -30,26 +30,6 @@ steps:
     jdkUserInputPath: '/usr/lib/jvm/java-17-openjdk-amd64'
     mavenVersionOption: 'Default'
 
-# Zip backend artifact
-# - task: ArchiveFiles@2
-#   displayName: 'Zip Backend Artifact'
-#   inputs:
-#     rootFolderOrFile: 'target'
-#     includeRootFolder: false
-#     archiveType: 'zip'
-#     archiveFile: '$(Build.ArtifactStagingDirectory)/backend.zip'
-#     replaceExistingArchive: true
-
-# - task: AzureWebApp@1
-#   displayName: 'Deploy Backend'
-#   inputs:
-#     azureSubscription: 'Azure for Students(dc2c23ce-59ad-4542-b897-cc7d38679c6e)'
-#     appType: 'webAppLinux'
-#     appName: 'DataAnnotationBackEnd'
-#     package: '$(Build.ArtifactStagingDirectory)/backend.zip'
-#     runtimeStack: 'JAVA|17-java17'
-#     deploymentMethod: 'zipDeploy'
-
   # Log in to Docker Hub
 - task: DockerInstaller@0
   displayName: 'Install Docker'
@@ -66,7 +46,7 @@ steps:
     command: build
     repository: elmahdidevops/cloudproject
     dockerfile: '**/Dockerfile'
-    tags: latest
+    tags: '$(Build.BuildId)'
 
   # Push Docker image
 - task: Docker@2
@@ -74,7 +54,11 @@ steps:
   inputs:
     command: push
     repository: elmahdidevops/cloudproject
-    tags: latest
+    tags: '$(Build.BuildId)'
+
+- script: |
+    sed -i 's|elmahdidevops/cloudproject:latest|elmahdidevops/cloudproject:$(Build.BuildId)|g' k8s/*.yaml
+  displayName: 'Update Image Tag in K8s Manifest'
 
 - task: Kubernetes@1
   inputs:
