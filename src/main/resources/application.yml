@@ -2,10 +2,10 @@ spring:
   application:
     name: Plateforme_d-annotation_collaborative
   datasource:
-    url: jdbc:h2:mem:testdb
-    username: sa
-    password:
-    driver-class-name: org.h2.Driver
+    url: jdbc:mysql://dataannotation.mysql.database.azure.com:3306/test?useSSL=true&requireSSL=true&verifyServerCertificate=true
+    username: dataannotation
+    password: Elmahdi@2003
+    driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
     hibernate:
       ddl-auto: create
