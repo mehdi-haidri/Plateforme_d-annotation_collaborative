@@ -30,4 +30,4 @@ spec:
   ports:
     - port: 80          # external service port
       targetPort: 8080    # internal container port
-  type: LoadBalancer
+  type: ClusterIP
