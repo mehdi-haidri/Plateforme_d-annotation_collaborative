@@ -17,5 +17,5 @@ WORKDIR /app
 # Copy only the JAR file from the previous stage
 COPY --from=build /app/target/*.jar app.jar
 
-EXPOSE 8090
+EXPOSE 8080
 ENTRYPOINT ["java", "-jar", "app.jar"]
